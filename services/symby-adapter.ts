@@ -77,10 +77,6 @@ const SymbyAdapter = (): Adapter => {
         emailVerified,
       };
     },
-    deleteUser: async (userId: string): Promise<void> => {
-      const userRepository = new UserRepository(new QueryRunner());
-      await userRepository.delete({ id: userId } as User);
-    },
     linkAccount: async (account: AdapterAccount): Promise<void> => {
       const accountRepository = new AccountRepository(new QueryRunner());
       await accountRepository.create(account);
@@ -91,11 +87,14 @@ const SymbyAdapter = (): Adapter => {
       userId: string;
       expires: Date;
     }): Promise<AdapterSession> => {
-      console.log("session from next auth", session);
       const sessionRepository = new SessionRepository(new QueryRunner());
-      const newSavedSession = await sessionRepository.create(
-        new Session(session)
-      );
+      const newSavedSession = await sessionRepository.create({
+        sessionToken: session.sessionToken,
+        user: {
+          id: session.userId,
+        },
+        expires: session.expires,
+      } as Session);
       return {
         sessionToken: newSavedSession.sessionToken,
         userId: newSavedSession.user.id,
@@ -105,7 +104,6 @@ const SymbyAdapter = (): Adapter => {
     getSessionAndUser: async (
       sessionToken: string
     ): Promise<{ session: AdapterSession; user: AdapterUser } | null> => {
-      console.log("session token from next auth", sessionToken);
       const sessionRepository = new SessionRepository(new QueryRunner());
       const session = await sessionRepository.readByToken(sessionToken);
       if (!session) {
@@ -137,6 +135,7 @@ const SymbyAdapter = (): Adapter => {
       };
     },
     deleteSession: async (sessionToken: string): Promise<void> => {
+      console.log("deleting session by token", sessionToken);
       const sessionRepository = new SessionRepository(new QueryRunner());
       await sessionRepository.deleteByToken(sessionToken);
     },
