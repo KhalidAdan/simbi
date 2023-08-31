@@ -3,7 +3,7 @@ import { QueryRunner } from "@/services/query-runner";
 import { AdapterAccount } from "next-auth/adapters";
 import { Repository } from "./types";
 
-export class UserRepository implements Repository<User, number> {
+export class UserRepository implements Repository<User, string> {
   constructor(private queryRunner: QueryRunner) {}
 
   async read() {
@@ -12,7 +12,7 @@ export class UserRepository implements Repository<User, number> {
     return users;
   }
 
-  async readById(id: number): Promise<User | undefined> {
+  async readById(id: string): Promise<User | undefined> {
     const [result] = await this.queryRunner.execute(
       "SELECT * FROM users WHERE id = $1",
       [id]
@@ -27,9 +27,10 @@ export class UserRepository implements Repository<User, number> {
     providerAccountId: Pick<AdapterAccount, "provider" | "providerAccountId">
   ): Promise<User | undefined> {
     const [result] = await this.queryRunner.execute(
-      "SELECT * FROM account INNER JOIN users ON account.user_id = users.id WHERE account.id = $1",
-      [providerAccountId]
+      "SELECT * FROM account INNER JOIN users ON account.user_id = users.id WHERE account.provider = $1 AND account.provider_account_id = $2",
+      [providerAccountId.provider, providerAccountId.providerAccountId]
     );
+    console.log("result of read by account", result);
     if (!result) {
       return undefined;
     }
@@ -48,8 +49,8 @@ export class UserRepository implements Repository<User, number> {
   }
 
   async create(entity: User): Promise<User> {
-    const user = await this.queryRunner.execute(
-      "INSERT INTO users (name, email, image, emailVerified) VALUES ($1, $2, $3, $4)",
+    const [user] = await this.queryRunner.execute(
+      "INSERT INTO users (name, email, image, email_verified) VALUES ($1, $2, $3, $4) RETURNING id, name, email, image, email_verified",
       [entity.name, entity.email, entity.image, entity.emailVerified]
     );
     return new User(user);
@@ -62,13 +63,6 @@ export class UserRepository implements Repository<User, number> {
     );
 
     return new User(user);
-  }
-
-  async linkAccount(account: AdapterAccount): Promise<void> {
-    await this.queryRunner.execute(
-      "UPDATE users SET account_id = $1 WHERE id = $2",
-      [account.providerAccountId, account.userId]
-    );
   }
 
   async delete(entity: User): Promise<void> {

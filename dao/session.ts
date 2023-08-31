@@ -36,7 +36,8 @@ export class SessionRepository implements Repository<Session, string> {
   }
 
   async create(entity: Session): Promise<Session> {
-    const session = await this.queryRunner.execute(
+    console.log("session entity", entity);
+    const [session] = await this.queryRunner.execute(
       "INSERT INTO session (user_id, expires, session_token) VALUES ($1, $2, $3)",
       [entity.user.id, entity.expires, entity.sessionToken]
     );

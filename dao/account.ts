@@ -1,5 +1,6 @@
 import { Account } from "@/models/account";
 import { QueryRunner } from "@/services/query-runner";
+import { AdapterAccount } from "next-auth/adapters";
 import { Repository } from "./types";
 
 export class AccountRepository implements Repository<Account, number> {
@@ -36,8 +37,8 @@ export class AccountRepository implements Repository<Account, number> {
   }
 
   async create(entity: Account): Promise<Account> {
-    const account = await this.queryRunner.execute(
-      "INSERT INTO account (user_id, provider, provider_account_id, refresh_token, access_token, expires_at, token_type, scope, id_token, session_state, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+    const [account] = await this.queryRunner.execute(
+      "INSERT INTO account (user_id, provider, provider_account_id, refresh_token, access_token, expires_at, token_type, scope, id_token, session_state) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id, user_id",
       [
         entity.userId,
         entity.provider,
@@ -49,8 +50,6 @@ export class AccountRepository implements Repository<Account, number> {
         entity.scope,
         entity.idToken,
         entity.sessionState,
-        entity.createdDate,
-        entity.updatedDate,
       ]
     );
     return new Account(account);
@@ -77,5 +76,12 @@ export class AccountRepository implements Repository<Account, number> {
     await this.queryRunner.execute("DELETE FROM account WHERE id = $1", [
       entity.id,
     ]);
+  }
+
+  async linkAccount(account: AdapterAccount): Promise<void> {
+    await this.queryRunner.execute(
+      "UPDATE account SET user_id = $1 WHERE provider_account_id = $2",
+      [account.userId, account.providerAccountId]
+    );
   }
 }
