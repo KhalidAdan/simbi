@@ -16,3 +16,5 @@ export class User {
     this.updatedDate = row.update_date ?? null;
   }
 }
+
+export type UserType = typeof User;

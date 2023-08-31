@@ -4,6 +4,7 @@ CREATE TABLE product (
   product_description text NOT NULL,
   product_image text,
   price integer NOT NULL,
+  url text NOT NULL,
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp
 );

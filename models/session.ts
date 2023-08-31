@@ -12,3 +12,5 @@ export class Session {
     this.sessionToken = row.session_token ?? null;
   }
 }
+
+export type SessionType = typeof Session;

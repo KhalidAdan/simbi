@@ -5,7 +5,7 @@ export default function LoginPage() {
   return (
     <div className="grid place-items-center h-full">
       <div className="flex flex-col">
-        <UserAuthForm />
+        <UserAuthForm state="login" />
         <p className="leading-7 [&:not(:first-child)]:mt-6 w-2/3 text-center">
           <Link
             href="/register"

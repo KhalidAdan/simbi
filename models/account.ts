@@ -28,3 +28,5 @@ export class Account {
     this.updatedDate = row.update_date ?? null;
   }
 }
+
+export type AccountType = typeof Account;

@@ -24,7 +24,7 @@ export default async function RootLayout({
     <>
       <html className="h-full" lang="en" suppressHydrationWarning>
         <head />
-        <body className="container mx-auto md:px-64 p-10 h-full">
+        <body className="container mx-auto lg:px-64 p-10 h-full">
           <SessionProvider session={session}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               {children}
