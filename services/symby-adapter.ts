@@ -135,7 +135,6 @@ const SymbyAdapter = (): Adapter => {
       };
     },
     deleteSession: async (sessionToken: string): Promise<void> => {
-      console.log("deleting session by token", sessionToken);
       const sessionRepository = new SessionRepository(new QueryRunner());
       await sessionRepository.deleteByToken(sessionToken);
     },

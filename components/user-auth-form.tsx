@@ -9,9 +9,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signIn, useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export function UserAuthForm() {
   const { data: session } = useSession();
+  if (session)
+    // redirect to home if already signed in
+    redirect("/");
   return (
     <Card className="w-[350px]">
       <CardHeader>
@@ -26,7 +30,17 @@ export function UserAuthForm() {
         <form>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Button onClick={() => signIn("google")}>Google</Button>
+              <Button
+                onClick={(e) => {
+                  e.preventDefault(); // next auth errors if this is removed???
+                  signIn("google", {
+                    callbackUrl: "/",
+                    redirect: true,
+                  });
+                }}
+              >
+                Google
+              </Button>
             </div>
           </div>
         </form>

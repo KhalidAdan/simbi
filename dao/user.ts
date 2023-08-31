@@ -30,7 +30,6 @@ export class UserRepository implements Repository<User, string> {
       "SELECT * FROM account INNER JOIN users ON account.user_id = users.id WHERE account.provider = $1 AND account.provider_account_id = $2",
       [providerAccountId.provider, providerAccountId.providerAccountId]
     );
-    console.log("result of read by account", result);
     if (!result) {
       return undefined;
     }
