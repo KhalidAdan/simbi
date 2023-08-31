@@ -1,18 +1,18 @@
 export class User {
-  id?: number;
-  name: string;
+  id: string;
+  name?: string;
   email: string;
-  emailVerified?: Date;
-  image: string;
+  emailVerified: Date;
+  image?: string;
   createdDate?: Date;
   updatedDate?: Date;
   constructor(row: any) {
     this.id = row.id;
-    this.name = row.name;
-    this.email = row.email;
-    this.emailVerified = row.email_verified ?? undefined;
-    this.image = row.image;
-    this.createdDate = row.created_date ?? undefined;
-    this.updatedDate = row.update_date ?? undefined;
+    this.name = row.name ?? null;
+    this.email = row.email ?? null;
+    this.emailVerified = row.email_verified ?? true; // TODO: Fix this if we ever allow paswordless logins
+    this.image = row.image ?? null;
+    this.createdDate = row.created_date ?? null;
+    this.updatedDate = row.update_date ?? null;
   }
 }

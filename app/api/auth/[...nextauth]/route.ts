@@ -1,4 +1,4 @@
-import SymbyAdapter from "@/services/next-auth-pg-adapter";
+import SymbyAdapter from "@/services/symby-adapter";
 import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 

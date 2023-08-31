@@ -26,7 +26,7 @@ export function UserAuthForm() {
         <form>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Button onClick={() => signIn()}>GitHub</Button>
+              <Button onClick={() => signIn("google")}>Google</Button>
             </div>
           </div>
         </form>
