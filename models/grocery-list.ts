@@ -3,12 +3,14 @@ export class GroceryList {
   name: string;
   createdDate?: Date;
   updatedDate?: Date;
+  purchased?: boolean;
 
   constructor(row: any) {
     this.id = row.id;
     this.name = row.name;
-    this.createdDate = row.created_date ?? undefined;
-    this.updatedDate = row.update_date ?? undefined;
+    this.createdDate = row.created_date;
+    this.updatedDate = row.updated_date ?? undefined;
+    this.purchased = row.purchased;
   }
 }
 

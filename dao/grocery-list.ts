@@ -26,14 +26,14 @@ export class GroceryListRepository implements Repository<GroceryList, number> {
 
   async create(entity: GroceryList): Promise<void> {
     await this.queryRunner.execute(
-      "INSERT INTO grocery_list (name, updated_at, created_at) VALUES ($1, $2, $3)",
+      "INSERT INTO grocery_list (name, updated_date, created_date) VALUES ($1, $2, $3)",
       [entity.name, entity.updatedDate, entity.createdDate]
     );
   }
 
   async update(entity: GroceryList): Promise<void> {
     await this.queryRunner.execute(
-      "UPDATE grocery_list SET name = $1, updated_at = $2 WHERE id = $3",
+      "UPDATE grocery_list SET name = $1, updated_date = $2 WHERE id = $3",
       [entity.name, entity.updatedDate, entity.id]
     );
   }

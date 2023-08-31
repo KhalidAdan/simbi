@@ -66,6 +66,13 @@ export class FoodRepository implements Repository<Food, number> {
     );
   }
 
+  async updateApproved(entity: Food): Promise<void> {
+    await this.queryRunner.execute(
+      "UPDATE food SET approved = $1 WHERE id = $2",
+      [entity.approved, entity.id]
+    );
+  }
+
   async delete(entity: Food): Promise<void> {
     await this.queryRunner.execute("DELETE FROM food WHERE id = $1", [
       entity.id,
