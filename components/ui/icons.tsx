@@ -31,6 +31,7 @@ import {
 export type Icon = LucideIcon;
 
 export const Icons = {
+  loading: Loader2,
   megaPhone: Megaphone,
   calendar: Calendar,
   logo: Command,

@@ -1,14 +1,26 @@
+"use client";
+
 import { useMutation } from "@/lib/hooks/use-mutation";
 import { List } from "@/models/list";
+import React from "react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
+import { DatePicker } from "../ui/date-picker";
 import { Input } from "../ui/input";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
 type CreateListType = Pick<List, "name" | "type" | "is_public" | "description">;
 
-export function AddListForm() {
+export function AddListForm({ recurring }: { recurring?: boolean }) {
+  const [isRecurring, setRecurring] = React.useState(recurring);
   const { mutate, isLoading, isError, isSuccess, data, error } = useMutation<
     List,
     CreateListType
@@ -54,35 +66,70 @@ export function AddListForm() {
     });
   };
 
+  const handleChange = (e: any) => {
+    setRecurring(e.target.value === "recurring");
+  };
+
   return (
-    <form name="add-list-form" className="space-y-4" onSubmit={handleSubmit}>
+    <form name="add-list-form" className="space-y-5" onSubmit={handleSubmit}>
       <div className="space-y-1">
         <label htmlFor="list_name">Name</label>
         <Input id="list_name" name="list_name" required />
       </div>
+
       <div className="space-y-1">
         <label htmlFor="list_description">Description</label>
         <Textarea id="list_description" name="list_description" required />
       </div>
+
+      <div className="space-y-1 pb-4">
+        <label htmlFor="end_date" className="block">
+          End date{" "}
+        </label>
+        <DatePicker />
+      </div>
+
       <div className="space-y-1">
         <label htmlFor="list_type" className="sr-only">
           Type
         </label>
-        <RadioGroup defaultValue="one_time" name="list_type" required>
+        <RadioGroup
+          defaultValue={recurring ? "recurring" : "one_time"}
+          name="list_type"
+          required
+        >
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="one_time" id="r1" />
+            <RadioGroupItem value="one_time" id="r1" onClick={handleChange} />
             <label htmlFor="r1">One time list</label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="recurring" id="r2" />
+            <RadioGroupItem value="recurring" id="r2" onClick={handleChange} />
             <label htmlFor="r2">Recurring list</label>
           </div>
         </RadioGroup>
       </div>
+
+      {isRecurring && (
+        <div className="space-y-1 pb-4">
+          <label htmlFor="window">Recurring window</label>
+          <Select name="window" defaultValue="thirty">
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="seven" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="seven">every 7 days</SelectItem>
+              <SelectItem value="fourteen">every 14 days</SelectItem>
+              <SelectItem value="thirty">every 30 days</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       <div className="flex items-center space-x-2">
         <Checkbox id="is_public" name="is_public" />
         <label htmlFor="is_public">Is this list public?</label>
       </div>
+
       <div className="flex justify-start">
         <Button type="submit" disabled={isLoading}>
           Save changes

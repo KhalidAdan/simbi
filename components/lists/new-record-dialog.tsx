@@ -67,7 +67,7 @@ export function NewRecordDialogue({ listId }: { listId: string }) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2 px-0 pb-0">
-                  <AddListForm />
+                  <AddListForm recurring={false} />
                 </CardContent>
               </Card>
             </TabsContent>

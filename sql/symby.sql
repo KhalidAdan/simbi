@@ -15,10 +15,11 @@ CREATE TABLE list (
   id SERIAL PRIMARY KEY,
   list_name text NOT NULL,
   list_description text NOT NULL,
+  end_date date NOT NULL,
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp,
   type list_type NOT NULL DEFAULT 'one_time',
-  recurring_date date, -- only used if type is recurring, and is the date the list is due so we can send reminders and add +30 days to it or w/e
+  recurring_window int REFERENCES recurring_times(id), -- in days, so 7 = weekly, 14 = bi-weekly, 30 = monthly, etc.
   public bool NOT NULL DEFAULT true
   user_id int REFERENCES users(id) ON DELETE NOT NULL
 );
@@ -28,6 +29,7 @@ CREATE TABLE list_product (
   product_id int REFERENCES product(id) ON DELETE CASCADE,
   list_id int REFERENCES list(id) ON DELETE CASCADE,
   quantity integer NOT NULL,
+  claimedBy int REFERENCES users(id) ON DELETE SET NULL,
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp
 );
@@ -39,4 +41,9 @@ CREATE TABLE message (
   product_id int REFERENCES product(id) ON DELETE SET NULL,
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp
+);
+
+CREATE TABLE recurring_times (
+  id SERIAL PRIMARY KEY,
+  name text
 );

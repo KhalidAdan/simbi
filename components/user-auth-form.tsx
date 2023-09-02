@@ -9,13 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signIn, useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 
 export function UserAuthForm({ state }: { state: "login" | "register" }) {
   const { data: session } = useSession();
-  if (session)
-    // redirect to home if already signed in
-    redirect("/");
+
   return (
     <Card className="w-[350px]">
       <CardHeader>

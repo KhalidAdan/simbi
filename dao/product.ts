@@ -28,10 +28,11 @@ export class ProductRepository implements Repository<Product, string> {
 
   async readProductsByListId(listId: string): Promise<Product[]> {
     const result = await this.queryRunner.execute(
-      `SELECT * FROM product
-        INNER JOIN list_product ON product.id = list_product.product_id
-        LEFT JOIN list ON list_product.list_id = list.id
-        WHERE list.id = $1`,
+      `SELECT *, p.id as product_id, u.name as user_name FROM product p
+        INNER JOIN list_product lp ON p.id = lp.product_id
+        LEFT JOIN list l ON lp.list_id = l.id
+        LEFT JOIN users u ON lp.claimed_by = u.id 
+        WHERE l.id = $1`,
       [listId]
     );
     console.log(result);
@@ -84,6 +85,17 @@ export class ProductRepository implements Repository<Product, string> {
     await this.queryRunner.execute(
       "DELETE FROM list_product WHERE list_id = $1 AND product_id = $2",
       [listId, product.id]
+    );
+  }
+
+  async pledgeProductOnList(
+    userId: string,
+    productId: string,
+    listId: string
+  ): Promise<void> {
+    await this.queryRunner.execute(
+      `UPDATE list_product SET claimed_by = $1 WHERE product_id = $2 AND list_id = $3 RETURNING *`,
+      [userId, productId, listId]
     );
   }
 }

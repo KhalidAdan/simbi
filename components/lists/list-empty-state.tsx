@@ -11,18 +11,18 @@ const items = [
   {
     name: "One time list",
     description: "Once it's gone it's gone. Make a one time list.",
-    href: "/lists",
+    href: "/lists/new?template=one-time",
     icon: Icons.megaPhone,
   },
   {
     name: "Recurring list",
     description:
       "Groceries? Rent? Living expenses? Your cat's catnip habit? Make a recurring list!",
-    href: "#",
+    href: "/lists/new?template=recurring",
     icon: Icons.calendar,
   },
   {
-    name: "Template Lists",
+    name: "Template Lists (coming soon!)",
     description:
       "Save time by using one of our pre-built templates for things like groceries.",
     href: "#",

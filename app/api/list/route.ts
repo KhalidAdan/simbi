@@ -3,7 +3,6 @@ import { UserRepository } from "@/dao/user";
 import { QueryRunner } from "@/services/query-runner";
 import { decode } from "next-auth/jwt";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -13,7 +12,7 @@ export async function POST(request: Request) {
   const cookieStore = cookies();
   const authCookie = cookieStore.get("next-auth.session-token");
 
-  if (authCookie === undefined) redirect("/login");
+  if (authCookie === undefined) throw new Error("Unauthorized");
 
   const authJwt = authCookie.value;
   const sessionToken = await decode({

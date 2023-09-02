@@ -13,7 +13,7 @@ export default async function ApplicationLayout({
 }) {
   return (
     <section className="grid grid-cols-4 h-full">
-      <div className="border-r hidden md:block  col-span-1">
+      <div className="border-r hidden md:block col-span-1">
         <SidebarNav />
       </div>
       <div className="col-span-4 md:col-span-3 p-10">{children}</div>
