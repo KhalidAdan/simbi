@@ -5,16 +5,16 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { product_name, price, quantity, description, id: listId } = body;
+  const { product_name, price, quantity, product_description, list_id } = body;
 
   const productRepository = new ProductRepository(new QueryRunner<Product>());
   const product = await productRepository.addProductToList(
     new Product({
       product_name,
       price,
-      product_description: description,
+      product_description,
     }),
-    listId,
+    list_id,
     quantity
   );
 

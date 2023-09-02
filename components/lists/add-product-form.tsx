@@ -13,7 +13,7 @@ type CreateProductType = Pick<
 > &
   Pick<ListProduct, "list_id" | "quantity">;
 
-export function AddProductForm() {
+export function AddProductForm({ listId }: { listId: string }) {
   const { mutate, isLoading, isError, isSuccess, data, error } = useMutation<
     Product,
     CreateProductType
@@ -53,7 +53,7 @@ export function AddProductForm() {
       price: e.currentTarget.price.value,
       quantity: e.currentTarget.quantity.value,
       product_description: e.currentTarget.product_description.value,
-      list_id: e.currentTarget.list_id.value,
+      list_id: listId,
     });
   };
 
@@ -82,9 +82,6 @@ export function AddProductForm() {
           name="product_description"
           required
         />
-      </div>
-      <div>
-        <Input type="hidden" id="list_id" name="list_id" value={1} required />
       </div>
       <div className="flex justify-start">
         <Button type="submit" disabled={isLoading}>

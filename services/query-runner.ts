@@ -29,23 +29,26 @@ export class QueryRunner<T> {
       await this.client.query("ROLLBACK");
       throw error;
     } finally {
-      await this.client.release();
+      this.client.release();
     }
   }
 
   async beginTransaction(): Promise<void> {
+    console.log("beginning transaction");
     if (!this.client) this.client = await this.pool.connect();
 
     await this.client.query("BEGIN");
   }
 
   async commitTransaction(): Promise<void> {
+    console.log("committing transaction");
     if (!this.client) this.client = await this.pool.connect();
 
     await this.client.query("COMMIT");
   }
 
   async rollbackTransaction(): Promise<void> {
+    console.log("rolling back transaction");
     if (!this.client) this.client = await this.pool.connect();
 
     await this.client.query("ROLLBACK");

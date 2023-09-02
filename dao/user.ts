@@ -4,7 +4,7 @@ import { AdapterAccount } from "next-auth/adapters";
 import { Repository } from "./types";
 
 export class UserRepository implements Repository<User, string> {
-  constructor(private queryRunner: QueryRunner) {}
+  constructor(private queryRunner: QueryRunner<User>) {}
 
   async read() {
     const result = await this.queryRunner.execute("SELECT * FROM users");
@@ -40,6 +40,19 @@ export class UserRepository implements Repository<User, string> {
     const [result] = await this.queryRunner.execute(
       "SELECT * FROM users WHERE email = $1",
       [email]
+    );
+    if (!result) {
+      return undefined;
+    }
+    return new User(result);
+  }
+
+  async readBySessionToken(sessionToken: string): Promise<User | undefined> {
+    const [result] = await this.queryRunner.execute(
+      `SELECT * FROM users u
+       INNER JOIN session s ON u.id = s.user_id
+       WHERE s.session_token = $1`,
+      [sessionToken]
     );
     if (!result) {
       return undefined;

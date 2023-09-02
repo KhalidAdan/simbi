@@ -26,6 +26,18 @@ export class ProductRepository implements Repository<Product, string> {
     return new Product(result);
   }
 
+  async readProductsByListId(listId: string): Promise<Product[]> {
+    const result = await this.queryRunner.execute(
+      `SELECT * FROM product
+        INNER JOIN list_product ON product.id = list_product.product_id
+        LEFT JOIN list ON list_product.list_id = list.id
+        WHERE list.id = $1`,
+      [listId]
+    );
+    console.log(result);
+    return result.map((row) => new Product(row));
+  }
+
   async create(entity: Omit<Product, "id" | "created_at">): Promise<Product> {
     const [result] = await this.queryRunner.execute(
       "INSERT INTO product (product_name, product_description, price) VALUES ($1, $2, $3) RETURNING *",
@@ -53,14 +65,15 @@ export class ProductRepository implements Repository<Product, string> {
   ): Promise<ListProduct | void> {
     try {
       this.queryRunner.beginTransaction();
-      await this.create(product);
+      const newProduct = await this.create(product);
       const [result] = await this.queryRunner.execute(
         "INSERT INTO list_product (list_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *",
-        [listId, product.id, quantity]
+        [listId, newProduct.id, quantity]
       );
       this.queryRunner.commitTransaction();
       return new ListProduct(result);
     } catch (error) {
+      console.error(error);
       this.queryRunner.rollbackTransaction();
     } finally {
       this.queryRunner.release();

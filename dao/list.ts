@@ -17,7 +17,7 @@ export class ListRepository implements Repository<List, string> {
   async readById(id: string): Promise<List> {
     const [result] = await this.queryRunner.execute(
       `SELECT * FROM list
-       INNER JOIN list_product ON list.id = list_product.list_id
+       LEFT JOIN list_product ON list.id = list_product.list_id
        LEFT JOIN product ON list_product.product_id = product.id
        WHERE list.id = $1`,
       [id]
@@ -25,10 +25,27 @@ export class ListRepository implements Repository<List, string> {
     return new List(result);
   }
 
-  async create(entity: Omit<List, "id" | "created_at">): Promise<List> {
+  async readByUserId(id: string): Promise<List[]> {
+    const result = await this.queryRunner.execute(
+      `SELECT * FROM list
+        WHERE list.user_id = $1`,
+      [id]
+    );
+    return result.map((row) => new List(row));
+  }
+
+  async create(
+    entity: Omit<List, "id" | "created_at"> & { userId: string }
+  ): Promise<List> {
     const [result] = await this.queryRunner.execute(
-      "INSERT INTO list (list_name, list_description, type, public) VALUES ($1, $2, $3, $4) RETURNING *",
-      [entity.name, entity.description, entity.type, entity.is_public]
+      "INSERT INTO list (list_name, list_description, type, public, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [
+        entity.name,
+        entity.description,
+        entity.type,
+        entity.is_public ? entity.is_public : false,
+        entity.userId,
+      ]
     );
     return new List(result);
   }

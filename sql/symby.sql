@@ -3,7 +3,7 @@ CREATE TABLE product (
   product_name text NOT NULL,
   product_description text NOT NULL,
   product_image text,
-  price integer NOT NULL,
+  price money NOT NULL,
   url text NOT NULL,
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp
@@ -18,7 +18,9 @@ CREATE TABLE list (
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp,
   type list_type NOT NULL DEFAULT 'one_time',
+  recurring_date date, -- only used if type is recurring, and is the date the list is due so we can send reminders and add +30 days to it or w/e
   public bool NOT NULL DEFAULT true
+  user_id int REFERENCES users(id) ON DELETE NOT NULL
 );
 
 CREATE TABLE list_product (

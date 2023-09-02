@@ -12,14 +12,13 @@ export class List {
 
   constructor(row: any) {
     this.id = row.id;
-    this.name = row.name;
-    this.description = row.description;
+    this.name = row.list_name;
+    this.description = row.list_description;
     this.type = row.type;
-    this.is_public = row.is_public;
+    this.is_public = row.public;
     this.created_at = row.created_at;
     this.updated_at = row.updated_at ?? null;
-    this.products = [];
-    row.product_id && this.products.push(new Product(row.products));
+    this.products = []; // change DAO's to generate models! no more results list
   }
 }
 

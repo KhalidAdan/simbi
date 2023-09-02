@@ -43,14 +43,14 @@ export function AddListForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const possibleElements = e.currentTarget.elements.namedItem("is_public");
-    const is_public =
-      possibleElements instanceof HTMLInputElement && possibleElements.checked;
+
+    const formData = new FormData(e.currentTarget);
+
     mutate({
-      name: e.currentTarget.list_name.value,
-      description: e.currentTarget.list_description.value,
-      type: e.currentTarget.list_type.value,
-      is_public,
+      name: formData.get("list_name") as string,
+      description: formData.get("list_description") as string,
+      type: formData.get("list_type") as string,
+      is_public: formData.get("is_public") === "on",
     });
   };
 
@@ -80,7 +80,7 @@ export function AddListForm() {
         </RadioGroup>
       </div>
       <div className="flex items-center space-x-2">
-        <Checkbox id="is_public" name="is_public" required />
+        <Checkbox id="is_public" name="is_public" />
         <label htmlFor="is_public">Is this list public?</label>
       </div>
       <div className="flex justify-start">

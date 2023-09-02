@@ -19,7 +19,7 @@ import {
 import { AddListForm } from "./add-list-form";
 import { AddProductForm } from "./add-product-form";
 
-export function AddProductDialogue() {
+export function NewRecordDialogue({ listId }: { listId: string }) {
   return (
     <Dialog>
       <DialogTrigger>
@@ -31,7 +31,8 @@ export function AddProductDialogue() {
         <DialogHeader>
           <DialogTitle>New Record</DialogTitle>
           <DialogDescription>
-            Add a new product to your list, or create a new list!
+            Add a new product to your current list, or create a new list if
+            you&apos;re feeling spicy.
           </DialogDescription>
         </DialogHeader>
         <div>
@@ -41,28 +42,31 @@ export function AddProductDialogue() {
               <TabsTrigger value="add-list">List</TabsTrigger>
             </TabsList>
             <TabsContent value="add-product">
-              <Card>
-                <CardHeader>
+              <Card className="border-none">
+                <CardHeader className="px-0">
                   <CardTitle>Add Product</CardTitle>
                   <CardDescription>
                     I&apos;ve always wanted new stuff, and this is how you get
-                    new stuff! - Sokka of the water tribe, probably
+                    new stuff!{" "}
+                    <span className="block">
+                      - Sokka of the water tribe, probably
+                    </span>
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <AddProductForm />
+                <CardContent className="px-0 pb-0">
+                  <AddProductForm listId={listId} />
                 </CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="add-list">
-              <Card>
-                <CardHeader>
+              <Card className="border-none">
+                <CardHeader className="px-0">
                   <CardTitle>Create a new list</CardTitle>
                   <CardDescription>
                     On yeah, it&apos;s all coming together - Kronk
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-2 px-0 pb-0">
                   <AddListForm />
                 </CardContent>
               </Card>
