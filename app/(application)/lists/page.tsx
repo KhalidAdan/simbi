@@ -1,5 +1,6 @@
 import { Title } from "@/components/content-title";
 import ListEmptyState from "@/components/lists/list-empty-state";
+import { NewListDialog } from "@/components/lists/new-list-dialog";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -26,9 +27,12 @@ async function getLists() {
 export default async function ListPage() {
   const lists: List[] = await getLists();
   return (
-    <main>
+    <main className="space-y-4">
       <Title>My lists</Title>
-      <section className="flex flex-col mt-16 gap-6">
+      <section className="text-end mt-16">
+        <NewListDialog />
+      </section>
+      <section className="flex flex-col gap-6">
         {lists.length ? (
           lists.map((list, i) => (
             <Link href={`/lists/${list.id}`} key={i}>
@@ -36,7 +40,7 @@ export default async function ListPage() {
                 <CardHeader>
                   <div className="flex justify-between items-end">
                     <CardTitle>{list.name}</CardTitle>
-                    <Badge>{!list.is_public ? "Public" : "Invite only"}</Badge>
+                    <Badge>{list.is_public ? "Public" : "Invite only"}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="flex justify-between gap-10">

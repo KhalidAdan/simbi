@@ -13,9 +13,6 @@ export async function POST(request: Request) {
   if (!user) throw new Error("User not found");
 
   const productRepository = new ProductRepository(new QueryRunner<Product>());
-  console.log("user id", user?.id);
-  console.log("product id", productId);
-  console.log("list id", listId);
   await productRepository.pledgeProductOnList(user?.id, productId, listId);
 
   return NextResponse.json({ status: 201 });

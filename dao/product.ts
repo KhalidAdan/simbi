@@ -28,21 +28,25 @@ export class ProductRepository implements Repository<Product, string> {
 
   async readProductsByListId(listId: string): Promise<Product[]> {
     const result = await this.queryRunner.execute(
-      `SELECT *, p.id as product_id, u.name as user_name FROM product p
+      `SELECT *, p.id, u.name as user_name FROM product p
         INNER JOIN list_product lp ON p.id = lp.product_id
         LEFT JOIN list l ON lp.list_id = l.id
         LEFT JOIN users u ON lp.claimed_by = u.id 
         WHERE l.id = $1`,
       [listId]
     );
-    console.log(result);
     return result.map((row) => new Product(row));
   }
 
   async create(entity: Omit<Product, "id" | "created_at">): Promise<Product> {
     const [result] = await this.queryRunner.execute(
-      "INSERT INTO product (product_name, product_description, price) VALUES ($1, $2, $3) RETURNING *",
-      [entity.product_name, entity.product_description, entity.price]
+      "INSERT INTO product (product_name, product_description, price, product_url) VALUES ($1, $2, $3, $4) RETURNING *",
+      [
+        entity.product_name,
+        entity.product_description,
+        entity.price,
+        entity.url,
+      ]
     );
     return new Product(result);
   }
@@ -67,6 +71,7 @@ export class ProductRepository implements Repository<Product, string> {
     try {
       this.queryRunner.beginTransaction();
       const newProduct = await this.create(product);
+      console.log(newProduct);
       const [result] = await this.queryRunner.execute(
         "INSERT INTO list_product (list_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *",
         [listId, newProduct.id, quantity]

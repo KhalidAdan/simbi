@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { Product } from "@/models/product";
 import { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 import React from "react";
 
 export const TableWrapper: React.FC<{
@@ -17,6 +18,16 @@ export const TableWrapper: React.FC<{
       accessorKey: "product_name",
       header: "Name",
       enableColumnFilter: true,
+      cell: ({ row }) => {
+        const product = row.original;
+        return product?.url ? (
+          <Link href={product.url} className="hover:underline" target="_blank">
+            {product.product_name}
+          </Link>
+        ) : (
+          <span>{product.product_name}</span>
+        );
+      },
     },
     {
       accessorKey: "price",

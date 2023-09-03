@@ -8,7 +8,6 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   const body = await request.json();
   const { name, type, is_public, description: list_description } = body;
-  console.log(body);
   const cookieStore = cookies();
   const authCookie = cookieStore.get("next-auth.session-token");
 
@@ -24,11 +23,10 @@ export async function POST(request: Request) {
   const user = await userRepository.readByEmail(sessionToken?.email!);
 
   const listRepository = new ListRepository(new QueryRunner());
-  console.log(is_public);
   const list = await listRepository.create({
     name: name,
     type,
-    is_public: is_public === "true" ? true : false,
+    is_public: is_public,
     description: list_description,
     userId: user?.id!,
   });
