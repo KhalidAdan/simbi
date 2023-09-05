@@ -1,4 +1,5 @@
 "use client";
+import { Tag } from "@/models/tag";
 import {
   Card,
   CardContent,
@@ -12,9 +13,14 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "../ui/dialog";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 import { AddListForm } from "./add-list-form";
 
-export const NewListDialog = () => {
+export const NewListDialog = ({ tags }: { tags?: Tag[] }) => {
   return (
     <Dialog>
       <DialogTrigger>
@@ -29,11 +35,21 @@ export const NewListDialog = () => {
         <Card className="border-none">
           <CardHeader className="px-0 -mt-8">
             <CardDescription>
-              On yeah, it&apos;s all coming together - Kronk
+              <HoverCard>
+                <HoverCardTrigger>
+                  On yeah, it&apos;s all coming together. - Kronk
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  <img
+                    alt="Kronk, being kronk!"
+                    src="https://media.giphy.com/media/KEYEpIngcmXlHetDqz/giphy.gif"
+                  />
+                </HoverCardContent>
+              </HoverCard>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 px-0 pb-0">
-            <AddListForm recurring={false} />
+            <AddListForm recurring={false} tags={tags} />
           </CardContent>
         </Card>
       </DialogContent>

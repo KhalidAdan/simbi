@@ -16,6 +16,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 import { AddListForm } from "./add-list-form";
 import { AddProductForm } from "./add-product-form";
 
@@ -63,7 +68,17 @@ export function NewRecordDialogue({ listId }: { listId: string }) {
                 <CardHeader className="px-0">
                   <CardTitle>Create a new list</CardTitle>
                   <CardDescription>
-                    On yeah, it&apos;s all coming together - Kronk
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        On yeah, it&apos;s all coming together. - Kronk
+                      </HoverCardTrigger>
+                      <HoverCardContent>
+                        <img
+                          alt="Kronk, being kronk!"
+                          src="https://media.giphy.com/media/KEYEpIngcmXlHetDqz/giphy.gif"
+                        />
+                      </HoverCardContent>
+                    </HoverCard>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2 px-0 pb-0">

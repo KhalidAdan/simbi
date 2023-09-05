@@ -8,7 +8,7 @@ export function TypographyH1({ children }: { children: React.ReactNode }) {
 
 export function TypographyTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="scroll-m-20 text-2xl font-semibold tracking-tight lg:text-5xl mb-4">
+    <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
       {children}
     </h1>
   );

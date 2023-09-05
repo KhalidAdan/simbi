@@ -1,4 +1,5 @@
 import { NewRecordDialogue } from "@/components/lists/new-record-dialog";
+import { ShareList } from "@/components/lists/share-list";
 import { TypographyMuted, TypographyTitle } from "@/components/ui/typography";
 import { ListRepository } from "@/dao/list";
 import { ProductRepository } from "@/dao/product";
@@ -29,10 +30,12 @@ export default async function ProductListPage({
       <TypographyTitle>{list.name}</TypographyTitle>
       <TypographyMuted>{list.description}</TypographyMuted>
       <section className="space-y-5 justify-start mt-6 pt-6 text-end">
-        <NewRecordDialogue listId={params.id} />
+        <div className="space-x-2">
+          <ShareList listId={params.id} />
+          <NewRecordDialogue listId={params.id} />
+        </div>
         <TableWrapper products={products} listId={params.id} />
       </section>
-      <section></section>
     </main>
   );
 }

@@ -47,3 +47,33 @@ CREATE TABLE recurring_times (
   id SERIAL PRIMARY KEY,
   name text
 );
+
+CREATE TABLE tags (
+  id SERIAL PRIMARY KEY, -- , , , , , 
+  name text NOT NULL,
+  colour text NOT NULL
+);
+
+CREATE TABLE tag_list (
+  id SERIAL PRIMARY KEY,
+  tag_id int REFERENCES tags(id) ON DELETE CASCADE,
+  list_id int REFERENCES list(id) ON DELETE CASCADE
+);
+
+INSERT INTO tags (name, colour) 
+VALUES ('🏫 Back to school', '#F9D9D9'),
+('🧴 Self care', 'red'),
+('⛺️ Summer Camp', 'amber'),
+('🪮 Hair care', 'cyan'),
+('🍼 Baby registry', 'lime'),
+('👩🏽‍🍳 Beginner cooking gear', 'violet');
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  list_id int REFERENCES list(id),
+  sender_user_id int REFERENCES users(id) ON DELETE CASCADE,
+  created_at timestamp NOT NULL DEFAULT NOW(),
+  expires_at timestamp NOT NULL DEFAULT NOW() + INTERVAL '7 days'
+);

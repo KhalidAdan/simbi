@@ -1,11 +1,13 @@
 "use client";
 
 import { useMutation } from "@/lib/hooks/use-mutation";
+import { cn } from "@/lib/utils";
 import { List } from "@/models/list";
 import React from "react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { DatePicker } from "../ui/date-picker";
+import { Icons } from "../ui/icons";
 import { Input } from "../ui/input";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import {
@@ -19,8 +21,15 @@ import { Textarea } from "../ui/textarea";
 
 type CreateListType = Pick<List, "name" | "type" | "is_public" | "description">;
 
-export function AddListForm({ recurring }: { recurring?: boolean }) {
+export function AddListForm({
+  recurring,
+  tags,
+}: {
+  recurring?: boolean;
+  tags?: { name: string; colour: string }[];
+}) {
   const [isRecurring, setRecurring] = React.useState(recurring);
+  const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const { mutate, isLoading, isError, isSuccess, data, error } = useMutation<
     List,
     CreateListType
@@ -81,6 +90,35 @@ export function AddListForm({ recurring }: { recurring?: boolean }) {
         <label htmlFor="list_description">Description</label>
         <Textarea id="list_description" name="list_description" required />
       </div>
+
+      {tags && (
+        <div className="flex flex-wrap">
+          {tags.map(({ name, colour }, i) => (
+            <span
+              key={i}
+              role="button"
+              className={cn(
+                selectedTags.includes(name) && `bg-${colour}-300 `,
+                "px-2 py-1 mr-1 mb-1 cursor-pointer rounded-lg border "
+              )}
+              onClick={() => {
+                if (selectedTags.includes(name)) {
+                  setSelectedTags((prev) => prev.filter((t) => t !== name));
+                } else {
+                  setSelectedTags((prev) => [...prev, name]);
+                }
+              }}
+            >
+              {name}{" "}
+              {selectedTags.includes(name) ? (
+                <Icons.close className="inline" />
+              ) : (
+                ""
+              )}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-1 pb-4">
         <label htmlFor="end_date" className="block">

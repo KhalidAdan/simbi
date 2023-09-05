@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,45 +38,52 @@ const NavLink: React.FC<NavType> = ({ href, label, initial }) => {
   const isActive = pathname.includes(href);
   return (
     <li>
-      <a
+      <Link
         href={href}
-        className={cn(
-          isActive
-            ? theme == "dark"
-              ? "bg-slate-700"
-              : "bg-slate-100"
-            : theme == "dark"
-            ? "hover:bg-slate-800"
-            : "hover:bg-slate-100",
-          "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-        )}
+        className={
+          "relative transition flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold max-w-full uppercase"
+        }
       >
         <Badge
-          className={cn(
-            "p-1 border rounded-lg ",
-            isActive && "border-slate-500"
-          )}
+          className={cn("p-1 border rounded-lg")}
           variant={isActive ? "secondary" : "outline"}
         >
           {initial}
         </Badge>
+        {isActive && (
+          <motion.span
+            layoutId="nav-bubble"
+            className={cn(
+              theme === "dark" ? "bg-white/5" : "bg-white/5",
+              "absolute inset-0 z-10 mix-blend-difference rounded-lg"
+            )}
+            transition={{ type: "spring", bounce: 0.2, duration: 0.3 }}
+          />
+        )}
         <span className="truncate">{label}</span>
-      </a>
+      </Link>
     </li>
   );
 };
 
 export const SidebarNav = () => {
   return (
-    <nav className="p-14">
-      <Link href="/">
-        <TypographyH3>simbi</TypographyH3>
-      </Link>
-      <ul role="list" className="-mx-2 space-y-1 mt-20">
-        {navLinks.map((team, i) => (
-          <NavLink key={i} {...team} />
-        ))}
-      </ul>
-    </nav>
+    <motion.aside
+      className="border-r hidden md:block col-span-1"
+      layoutId=""
+      initial={{ opacity: 0.0001 }}
+      animate={{ opacity: 1 }}
+    >
+      <nav className="p-14">
+        <Link href="/">
+          <TypographyH3>simbi</TypographyH3>
+        </Link>
+        <motion.ul role="list" className="-mx-2 space-y-1 mt-20">
+          {navLinks.map((link, i) => (
+            <NavLink key={i} {...link} />
+          ))}
+        </motion.ul>
+      </nav>
+    </motion.aside>
   );
 };
