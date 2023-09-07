@@ -1,23 +1,23 @@
 "use client";
 
 import { useMutation } from "@/lib/hooks/use-mutation";
-import { ListProduct } from "@/models/list-product";
-import { Product } from "@/models/product";
+import { ListProductType } from "@/models/list-product";
+import { ProductType } from "@/models/product";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
 type CreateProductType = Pick<
-  Product,
+  ProductType,
   "product_name" | "price" | "product_description" | "url"
 > &
-  Pick<ListProduct, "list_id" | "quantity">;
+  Pick<ListProductType, "list_id" | "quantity">;
 
 export function AddProductForm({ listId }: { listId: string }) {
   const router = useRouter();
   const { mutate, isLoading, isError, isSuccess, data, error } = useMutation<
-    Product,
+    ProductType,
     CreateProductType
   >({
     mutationFn: async (variables) => {
@@ -57,7 +57,7 @@ export function AddProductForm({ listId }: { listId: string }) {
       price: e.currentTarget.price.value,
       quantity: e.currentTarget.quantity.value,
       product_description: e.currentTarget.product_description.value,
-      list_id: listId,
+      list_id: parseInt(listId),
     });
   };
 

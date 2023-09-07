@@ -2,7 +2,7 @@
 
 import { useMutation } from "@/lib/hooks/use-mutation";
 import { cn } from "@/lib/utils";
-import { List } from "@/models/list";
+import { ListType } from "@/models/list";
 import React from "react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -19,7 +19,10 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
-type CreateListType = Pick<List, "name" | "type" | "is_public" | "description">;
+type CreateListType = Pick<
+  ListType,
+  "name" | "type" | "is_public" | "description" | "end_date"
+>;
 
 export function AddListForm({
   recurring,
@@ -31,7 +34,7 @@ export function AddListForm({
   const [isRecurring, setRecurring] = React.useState(recurring);
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const { mutate, isLoading, isError, isSuccess, data, error } = useMutation<
-    List,
+    ListType,
     CreateListType
   >({
     mutationFn: async (variables) => {
@@ -72,6 +75,7 @@ export function AddListForm({
       description: formData.get("list_description") as string,
       type: formData.get("list_type") as string,
       is_public: formData.get("is_public") === "on",
+      end_date: new Date(formData.get("end_date") as string),
     });
   };
 
@@ -124,7 +128,7 @@ export function AddListForm({
         <label htmlFor="end_date" className="block">
           End date{" "}
         </label>
-        <DatePicker />
+        <DatePicker required />
       </div>
 
       <div className="space-y-1">

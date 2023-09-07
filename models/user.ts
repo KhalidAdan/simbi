@@ -1,20 +1,13 @@
-export class User {
-  id: string;
-  name?: string;
-  email: string;
-  emailVerified: Date;
-  image?: string;
-  createdDate?: Date;
-  updatedDate?: Date;
-  constructor(row: any) {
-    this.id = row.id;
-    this.name = row.name ?? null;
-    this.email = row.email ?? null;
-    this.emailVerified = row.email_verified; // TODO: Fix this if we ever allow paswordless logins
-    this.image = row.image ?? null;
-    this.createdDate = row.created_date ?? null;
-    this.updatedDate = row.update_date ?? null;
-  }
-}
+import { z } from "zod";
 
-export type UserType = typeof User;
+export const User = z.object({
+  id: z.number(),
+  name: z.string().optional(),
+  email: z.string(),
+  emailVerified: z.date().optional(),
+  image: z.string().optional(),
+  createdDate: z.date().optional(),
+  updateDate: z.date().optional(),
+});
+
+export type UserType = z.infer<typeof User>;

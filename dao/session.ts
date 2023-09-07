@@ -1,19 +1,19 @@
-import { Session } from "@/models/session";
+import { Session, SessionType } from "@/models/session";
 import { QueryRunner } from "@/services/query-runner";
 import { Repository } from "./types";
 
-export class SessionRepository implements Repository<Session, string> {
-  constructor(private queryRunner: QueryRunner<Session>) {}
+export class SessionRepository implements Repository<SessionType, string> {
+  constructor(private queryRunner: QueryRunner<SessionType>) {}
 
-  async read(): Promise<Session[]> {
+  async read(): Promise<SessionType[]> {
     const result = await this.queryRunner.execute(
       "SELECT * FROM session INNER"
     );
-    const sessions: Session[] = result.map((row: any) => new Session(row));
+    const sessions = result.map((row: any) => Session.parse(row));
     return sessions;
   }
 
-  async readById(id: string): Promise<Session | undefined> {
+  async readById(id: string): Promise<SessionType | undefined> {
     const [result] = await this.queryRunner.execute(
       "SELECT * FROM session INNER JOIN users ON session.user_id = users.id WHERE id = $1",
       [id]
@@ -21,10 +21,10 @@ export class SessionRepository implements Repository<Session, string> {
     if (!result) {
       return undefined;
     }
-    return new Session(result);
+    return Session.parse(result);
   }
 
-  async readByToken(id: string): Promise<Session | undefined> {
+  async readByToken(id: string): Promise<SessionType | undefined> {
     const [result] = await this.queryRunner.execute(
       "SELECT * FROM session INNER JOIN users ON session.user_id = users.id WHERE session_token = $1",
       [id]
@@ -32,18 +32,18 @@ export class SessionRepository implements Repository<Session, string> {
     if (!result) {
       return undefined;
     }
-    return new Session(result);
+    return Session.parse(result);
   }
 
-  async create(entity: Session): Promise<Session> {
-    const [session] = await this.queryRunner.execute(
+  async create(entity: SessionType): Promise<SessionType> {
+    const [result] = await this.queryRunner.execute(
       "INSERT INTO session (user_id, expires, session_token) VALUES ($1, $2, $3) RETURNING id, user_id, expires, session_token",
       [entity.user.id, entity.expires, entity.sessionToken]
     );
-    return new Session(session);
+    return Session.parse(result);
   }
 
-  async update(entity: Session): Promise<void> {
+  async update(entity: SessionType): Promise<void> {
     await this.queryRunner.execute(
       "UPDATE session SET user_id = $1, expires = $2, session_token = $3 WHERE id = $4",
       [entity.user.id, entity.expires, entity.sessionToken, entity.id]

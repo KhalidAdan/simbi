@@ -1,3 +1,7 @@
+type SQLRecord<TData> = {
+  data: TData | TData[];
+};
+
 export interface Repository<T, K> {
   read(): Promise<T[]>;
   readById(id: K): Promise<T | undefined>;

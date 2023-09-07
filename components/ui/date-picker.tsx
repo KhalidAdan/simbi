@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-export function DatePicker() {
+export function DatePicker({ required }: { required?: boolean }) {
   const [date, setDate] = React.useState<Date>();
 
   return (
@@ -36,6 +36,7 @@ export function DatePicker() {
           selected={date}
           onSelect={setDate}
           initialFocus
+          required={required ? true : false}
         />
       </PopoverContent>
     </Popover>

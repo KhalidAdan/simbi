@@ -1,21 +1,21 @@
-import { ListProduct } from "@/models/list-product";
-import { Product } from "@/models/product";
+import { ListProduct, ListProductType } from "@/models/list-product";
+import { Product, ProductType } from "@/models/product";
 import { QueryRunner } from "@/services/query-runner";
 import { Repository } from "./types";
 
-export class ProductRepository implements Repository<Product, string> {
-  constructor(private queryRunner: QueryRunner<Product>) {}
+export class ProductRepository implements Repository<ProductType, string> {
+  constructor(private queryRunner: QueryRunner<ProductType>) {}
 
-  async read(): Promise<Product[]> {
+  async read(): Promise<ProductType[]> {
     const result = await this.queryRunner.execute(
       `SELECT * FROM product 
        INNER JOIN list_product ON product.id = list_product.product_id 
        LEFT JOIN list ON list_product.list_id = list.id`
     );
-    return result.map((row) => new Product(row));
+    return result.map((row) => Product.parse(row));
   }
 
-  async readById(id: string): Promise<Product> {
+  async readById(id: string): Promise<ProductType> {
     const [result] = await this.queryRunner.execute(
       `SELECT * FROM product 
        INNER JOIN list_product ON product.id = list_product.product_id 
@@ -23,10 +23,10 @@ export class ProductRepository implements Repository<Product, string> {
        WHERE product.id = $1`,
       [id]
     );
-    return new Product(result);
+    return Product.parse(result);
   }
 
-  async readProductsByListId(listId: string): Promise<Product[]> {
+  async readProductsByListId(listId: string): Promise<ProductType[]> {
     const result = await this.queryRunner.execute(
       `SELECT *, p.id, u.name as user_name FROM product p
         INNER JOIN list_product lp ON p.id = lp.product_id
@@ -35,12 +35,14 @@ export class ProductRepository implements Repository<Product, string> {
         WHERE l.id = $1`,
       [listId]
     );
-    return result.map((row) => new Product(row));
+    return result.map((row) => Product.parse(row));
   }
 
-  async create(entity: Omit<Product, "id" | "created_at">): Promise<Product> {
+  async create(
+    entity: Omit<ProductType, "id" | "created_at">
+  ): Promise<ProductType> {
     const [result] = await this.queryRunner.execute(
-      "INSERT INTO product (product_name, product_description, price, product_url) VALUES ($1, $2, $3, $4) RETURNING *",
+      `INSERT INTO product (product_name, product_description, price, product_url) VALUES ($1, $2, $3, $4) RETURNING *, product_name as name, product_description as description, product_url as url, created_at`,
       [
         entity.product_name,
         entity.product_description,
@@ -48,15 +50,16 @@ export class ProductRepository implements Repository<Product, string> {
         entity.url,
       ]
     );
-    return new Product(result);
+    console.log(result);
+    return Product.parse({ ...result });
   }
 
-  async update(entity: Product): Promise<Product> {
+  async update(entity: ProductType): Promise<ProductType> {
     const [result] = await this.queryRunner.execute(
       "UPDATE products SET product_name = $1, product_description = $2, price = $3 WHERE id = $4 RETURNING *",
       [entity.product_name, entity.product_description, entity.price, entity.id]
     );
-    return new Product(result);
+    return Product.parse(result);
   }
 
   async delete(id: string): Promise<void> {
@@ -64,20 +67,19 @@ export class ProductRepository implements Repository<Product, string> {
   }
 
   async addProductToList(
-    product: Product,
+    product: Omit<ProductType, "id">,
     listId: string,
     quantity: number
-  ): Promise<ListProduct | void> {
+  ): Promise<ListProductType | void> {
     try {
       this.queryRunner.beginTransaction();
       const newProduct = await this.create(product);
-      console.log(newProduct);
       const [result] = await this.queryRunner.execute(
         "INSERT INTO list_product (list_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *",
         [listId, newProduct.id, quantity]
       );
       this.queryRunner.commitTransaction();
-      return new ListProduct(result);
+      return ListProduct.parse(result);
     } catch (error) {
       console.error(error);
       this.queryRunner.rollbackTransaction();
@@ -86,7 +88,10 @@ export class ProductRepository implements Repository<Product, string> {
     }
   }
 
-  async removeProductFromList(product: Product, listId: string): Promise<void> {
+  async removeProductFromList(
+    product: ProductType,
+    listId: string
+  ): Promise<void> {
     await this.queryRunner.execute(
       "DELETE FROM list_product WHERE list_id = $1 AND product_id = $2",
       [listId, product.id]

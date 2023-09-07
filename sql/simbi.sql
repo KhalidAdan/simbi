@@ -15,7 +15,7 @@ CREATE TABLE list (
   id SERIAL PRIMARY KEY,
   list_name text NOT NULL,
   list_description text NOT NULL,
-  end_date date NOT NULL,
+  end_date timestamp,
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp,
   type list_type NOT NULL DEFAULT 'one_time',

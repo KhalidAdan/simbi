@@ -1,19 +1,12 @@
-export class ListProduct {
-  id: string;
-  list_id: string;
-  product_id: string;
-  quantity: number;
-  created_at: Date;
-  updated_at?: Date;
+import { z } from "zod";
 
-  constructor(row: any) {
-    this.id = row.id;
-    this.list_id = row.list_id;
-    this.product_id = row.product_id;
-    this.quantity = row.quantity;
-    this.created_at = row.created_at;
-    this.updated_at = row.updated_at ?? null;
-  }
-}
+export const ListProduct = z.object({
+  id: z.number(),
+  list_id: z.coerce.number(),
+  product_id: z.coerce.number(),
+  quantity: z.number(),
+  created_at: z.date(),
+  updated_at: z.date().optional(),
+});
 
-export type ListProductType = typeof ListProduct;
+export type ListProductType = z.infer<typeof ListProduct>;

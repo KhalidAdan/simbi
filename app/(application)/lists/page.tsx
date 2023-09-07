@@ -12,16 +12,13 @@ import {
 import { ListRepository } from "@/dao/list";
 import { TagRepository } from "@/dao/tag";
 import { getUserFromToken } from "@/lib/server.utils";
-import { List } from "@/models/list";
-import { Tag } from "@/models/tag";
+import { ListType } from "@/models/list";
+import { TagType } from "@/models/tag";
 import { QueryRunner } from "@/services/query-runner";
 import Link from "next/link";
 
 async function getLists() {
   const user = await getUserFromToken();
-
-  if (!user) throw new Error("User not found");
-
   const listRepository = new ListRepository(new QueryRunner());
   return await listRepository.readByUserId(user.id);
 }
@@ -32,13 +29,13 @@ async function getTags() {
 }
 
 export default async function ListPage() {
-  const lists: List[] = await getLists();
-  const tags: Tag[] = await getTags();
+  const lists: ListType[] = await getLists();
+  const tags: TagType[] = await getTags();
   return (
     <main className="space-y-4">
       <Title>My lists</Title>
-      <section className="text-end mt-16">
-        <NewListDialog tags={tags} />
+      <section className="text-end mt-16 min-h-[24px]">
+        {lists.length !== 0 && <NewListDialog tags={tags} />}
       </section>
       <section className="flex flex-col gap-6">
         {lists.length ? (

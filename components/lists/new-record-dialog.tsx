@@ -1,6 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "../ui/button";
 import {
   Card,
   CardContent,
@@ -27,10 +28,10 @@ import { AddProductForm } from "./add-product-form";
 export function NewRecordDialogue({ listId }: { listId: string }) {
   return (
     <Dialog>
-      <DialogTrigger>
-        <span className="border px-4 py-2 rounded leading-5 text-sm">
+      <DialogTrigger asChild>
+        <Button variant="outline" className="px-4 py-2 self-end">
           Add Product
-        </span>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
