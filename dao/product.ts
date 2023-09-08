@@ -87,13 +87,16 @@ export class ProductRepository implements Repository<ProductType, string> {
     quantity: number
   ): Promise<ListProductType | void> {
     try {
-      this.queryRunner.beginTransaction();
-      const newProduct = await this.create(product);
-      const [result] = await this.queryRunner.execute(
-        "INSERT INTO list_product (list_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *",
-        [listId, newProduct.id, quantity]
+      const [result] = await this.queryRunner.executeInTransaction(
+        async (queryRunnerInstance) => {
+          const newProduct = await this.create(product);
+          return queryRunnerInstance.execute(
+            "INSERT INTO list_product (list_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *",
+            [listId, newProduct.id, quantity]
+          );
+        }
       );
-      this.queryRunner.commitTransaction();
+
       return ListProduct.parse(result);
     } catch (error) {
       console.error(error);

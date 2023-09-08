@@ -90,4 +90,11 @@ export class ListRepository implements Repository<ListType, string> {
     );
     return List.parse(result);
   }
+
+  async removeProductFromList(productId: string): Promise<undefined> {
+    await this.queryRunner.execute(
+      `DELETE FROM list_priduct WHERE product_id = $1`,
+      [productId]
+    );
+  }
 }

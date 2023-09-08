@@ -31,7 +31,7 @@ function itemsPledged(products: ProductType[]) {
   return Math.round((pledged.length / products.length) * 100);
 }
 
-async function isLoggedInUser(userId: string) {
+async function isListOwner(userId: string) {
   const user = await getUserFromToken();
   return user.id == userId;
 }
@@ -43,7 +43,7 @@ export default async function ProductListPage({
 }) {
   const products = await getProductsByList(params.id);
   const list = await getListById(params.id);
-  const isOwner = await isLoggedInUser(list.user_id);
+  const isOwner = await isListOwner(list.user_id);
   return (
     <main>
       <AnimatedContainer>
@@ -56,7 +56,7 @@ export default async function ProductListPage({
               <NewRecordDialogue listId={params.id} />
             </div>
           )}
-          <TableWrapper products={products} listId={params.id} />
+          <TableWrapper products={products} listId={params.id} isListOwner />
           <div className="flex justify-end items-end gap-x-2">
             <span>Pledged:</span>
             <TypographyH4>{itemsPledged(products)}%</TypographyH4>

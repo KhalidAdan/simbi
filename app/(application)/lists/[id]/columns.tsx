@@ -6,14 +6,57 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { ProductType } from "@/models/product";
 import { ColumnDef } from "@tanstack/react-table";
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import React from "react";
 
 export const TableWrapper: React.FC<{
   products: ProductType[];
   listId: string;
-}> = ({ products, listId }) => {
+  isListOwner?: boolean;
+}> = ({ products, listId, isListOwner = false }) => {
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const handlePledge = async (product: ProductType) => {
+    try {
+      setIsLoading(true);
+      await fetch(`/api/product/${product.id}/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          listId,
+        }),
+      });
+      revalidatePath(`/lists/${listId}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (product: ProductType) => {
+    try {
+      setIsLoading(true);
+      await fetch(`/api/product/${product.id}/list`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: product.id,
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const columns: ColumnDef<ProductType>[] = [
     {
       accessorKey: "product_name",
@@ -44,41 +87,22 @@ export const TableWrapper: React.FC<{
     },
     {
       accessorKey: "claimed_by",
-      header: "Pledged by",
+      header: () => <div className="my-2 text-center">Pledged by</div>,
       cell: ({ row }) => {
         const product = row.original;
+
         if (!product.claimed_by)
           return (
-            <div className="w-full flex justify-center">
-              <Button
-                variant="secondary"
-                disabled={isLoading}
-                onClick={async () => {
-                  try {
-                    setIsLoading(true);
-                    await fetch(`/api/product/${product.id}/user`, {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        productId: product.id,
-                        listId,
-                      }),
-                    });
-                  } catch (error) {
-                    console.error(error);
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-              >
-                {isLoading && (
-                  <Icons.loading className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Pledge
-              </Button>
-            </div>
+            <Button
+              variant="secondary"
+              disabled={isLoading}
+              onClick={() => handlePledge(product)}
+            >
+              {isLoading && (
+                <Icons.loading className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Pledge
+            </Button>
           );
         return (
           <div className="w-full flex justify-center">
@@ -91,6 +115,28 @@ export const TableWrapper: React.FC<{
       },
     },
   ];
+
+  isListOwner &&
+    columns.push({
+      accessorKey: "delete",
+      header: () => <div className="my-2 text-center">Remove Item</div>,
+      cell: ({ row }) => {
+        const product = row.original;
+
+        return (
+          <Button
+            variant="secondary"
+            disabled={isLoading}
+            onClick={() => handleDelete(product)}
+          >
+            {isLoading && (
+              <Icons.loading className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Delete
+          </Button>
+        );
+      },
+    });
 
   return <DataTable columns={columns} data={products} />;
 };

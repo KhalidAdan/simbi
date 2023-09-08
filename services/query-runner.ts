@@ -1,4 +1,7 @@
 import { Pool, PoolClient } from "@neondatabase/serverless";
+
+type QueryWithParams = { query: string; params?: any[] };
+
 export class QueryRunner<T> {
   private pool: Pool;
   private client?: PoolClient;
@@ -8,8 +11,7 @@ export class QueryRunner<T> {
   }
 
   async execute(query: string, params?: any[]) {
-    this.client = await this.pool.connect();
-
+    this.client = await this.connect();
     try {
       const result = await this.client.query(query, params);
       return result.rows;
@@ -18,45 +20,72 @@ export class QueryRunner<T> {
     }
   }
 
-  async executeInTransaction(query: string, params?: any[]) {
-    this.client = await this.pool.connect();
+  // A batch of only side effect queries
+  async executeInTransaction(queries: QueryWithParams[]): Promise<void>;
+  // callback for more complex operations as an escape hatch
+  async executeInTransaction(
+    callback: (client: QueryRunner<T>) => Promise<any>
+  ): Promise<any>;
+  async executeInTransaction(
+    callbackOrQueries:
+      | QueryWithParams[]
+      | ((client: QueryRunner<T>) => Promise<any>)
+  ) {
+    this.client = await this.connect();
+
     try {
-      await this.client.query("BEGIN");
-      const result = await this.execute(query, params);
-      await this.client.query("COMMIT");
-      return result;
+      await this.beginTransaction();
+
+      if (Array.isArray(callbackOrQueries)) {
+        // process queries array
+        for (const { query, params } of callbackOrQueries) {
+          await this.client.query(query, params); // TODO: handle errors and return results array, not sure how to group them though
+        }
+      } else {
+        // Execute the callback
+        await callbackOrQueries(this);
+      }
+
+      await this.commitTransaction();
     } catch (error) {
-      await this.client.query("ROLLBACK");
+      await this.rollbackTransaction();
       throw error;
     } finally {
-      this.client.release();
+      await this.release();
     }
   }
-
   async beginTransaction(): Promise<void> {
     console.log("beginning transaction");
-    if (!this.client) this.client = await this.pool.connect();
+    this.client = await this.connect();
 
     await this.client.query("BEGIN");
   }
 
   async commitTransaction(): Promise<void> {
     console.log("committing transaction");
-    if (!this.client) this.client = await this.pool.connect();
+    this.client = await this.connect();
 
     await this.client.query("COMMIT");
   }
 
   async rollbackTransaction(): Promise<void> {
     console.log("rolling back transaction");
-    if (!this.client) this.client = await this.pool.connect();
+    this.client = await this.connect();
 
     await this.client.query("ROLLBACK");
   }
 
-  async release(): Promise<void> {
-    if (!this.client) this.client = await this.pool.connect();
+  private async connect() {
+    if (!this.client) {
+      this.client = await this.pool.connect();
+    }
+    return this.client;
+  }
 
-    await this.client.release();
+  async release(): Promise<void> {
+    if (this.client) {
+      await this.client.release();
+      this.client = undefined;
+    }
   }
 }
