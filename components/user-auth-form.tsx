@@ -8,11 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 export function UserAuthForm({ state }: { state: "login" | "register" }) {
-  const { data: session } = useSession();
-
   return (
     <Card className="w-[350px]">
       <CardHeader>
@@ -32,7 +30,7 @@ export function UserAuthForm({ state }: { state: "login" | "register" }) {
                 onClick={(e) => {
                   e.preventDefault(); // next auth errors if this is removed???
                   signIn("google", {
-                    callbackUrl: "/",
+                    callbackUrl: "/lists",
                     redirect: true,
                   });
                 }}

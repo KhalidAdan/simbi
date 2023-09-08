@@ -10,10 +10,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { Icons } from "../ui/icons";
 import { Input } from "../ui/input";
+import { useToast } from "../ui/use-toast";
 
 export function ShareList({ listId }: { listId: string }) {
+  const { toast } = useToast();
   const [uuid, setUuid] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -22,12 +23,12 @@ export function ShareList({ listId }: { listId: string }) {
       setIsLoading(true);
       const data = await fetch(`/api/list/${listId}/share`, {
         method: "POST",
-        body: JSON.stringify({ listId: listId }),
+        body: JSON.stringify({ list_id: listId }),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      const { uuid } = await data.json();
+      const { code: uuid } = await data.json();
       setUuid(uuid);
     } catch (error) {
       console.error(error);
@@ -45,7 +46,7 @@ export function ShareList({ listId }: { listId: string }) {
           onClick={handleClick}
           disabled={isLoading}
         >
-          {isLoading && <Icons.spinner className="animate-spin" />} Invite
+          Invite
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -57,8 +58,21 @@ export function ShareList({ listId }: { listId: string }) {
           </DialogDescription>
         </DialogHeader>
         <div className="flex gap-1 mt-4">
-          <Input id="share_code" name="share_code" />
-          <Button variant="secondary">Copy</Button>
+          <Input id="share_code" name="share_code" value={uuid} disabled />
+          <Button
+            variant="secondary"
+            onClick={() => {
+              //copy the value of uuid into the clipboard
+              navigator.clipboard.writeText(
+                "https://localhost:3000/register?invite_code=" + uuid
+              );
+              toast({
+                title: "Copied invite code to link to clipboard",
+              });
+            }}
+          >
+            Copy
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

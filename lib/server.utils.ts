@@ -1,3 +1,4 @@
+import { InviteCodeRepository } from "@/dao/invite-code";
 import { UserRepository } from "@/dao/user";
 import { UserType } from "@/models/user";
 import { QueryRunner } from "@/services/query-runner";
@@ -35,3 +36,16 @@ export const getUserFromToken = async (): Promise<
     id: String(loggedInUser.id),
   };
 };
+
+export function isValidUUID(uuid: string): boolean {
+  const pattern =
+    /^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/;
+  return pattern.test(uuid);
+}
+
+export async function checkInviteCode(code: string) {
+  const inviteCodeRepository = new InviteCodeRepository(new QueryRunner());
+  const inviteCodeExists = !!(await inviteCodeRepository.readByCode(code));
+
+  return inviteCodeExists;
+}

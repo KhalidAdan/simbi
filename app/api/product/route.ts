@@ -5,8 +5,6 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { product_name, price, quantity, url, product_description, list_id } =
-    body;
 
   try {
     ProductInput.parse(body);
@@ -16,6 +14,8 @@ export async function POST(request: Request) {
       error
     );
   }
+  const { product_name, price, quantity, url, product_description, list_id } =
+    body;
 
   const productRepository = new ProductRepository(
     new QueryRunner<ProductType>()

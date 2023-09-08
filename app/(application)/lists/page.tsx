@@ -1,3 +1,4 @@
+import { AnimatedContainer } from "@/components/animated-container";
 import { Title } from "@/components/content-title";
 import ListEmptyState from "@/components/lists/list-empty-state";
 import { NewListDialog } from "@/components/lists/new-list-dialog";
@@ -32,32 +33,38 @@ export default async function ListPage() {
   const lists: ListType[] = await getLists();
   const tags: TagType[] = await getTags();
   return (
-    <main className="space-y-4">
-      <Title>My lists</Title>
-      <section className="text-end mt-16 min-h-[24px]">
-        {lists.length !== 0 && <NewListDialog tags={tags} />}
-      </section>
-      <section className="flex flex-col gap-6">
-        {lists.length ? (
-          lists.map((list, i) => (
-            <Link href={`/lists/${list.id}`} key={i}>
-              <Card>
-                <CardHeader>
-                  <div className="flex justify-between items-end">
-                    <CardTitle>{list.name}</CardTitle>
-                    <Badge>{list.is_public ? "Public" : "Invite only"}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex justify-between gap-10">
-                  <CardDescription>{list.description}</CardDescription>
-                </CardContent>
-              </Card>
-            </Link>
-          ))
-        ) : (
-          <ListEmptyState />
-        )}
-      </section>
+    <main>
+      <AnimatedContainer>
+        <div className="space-y-4">
+          <Title>My lists</Title>
+          <section className="text-end mt-16 min-h-[24px]">
+            {lists.length !== 0 && <NewListDialog tags={tags} />}
+          </section>
+          <section className="flex flex-col gap-6">
+            {lists.length ? (
+              lists.map((list, i) => (
+                <Link href={`/lists/${list.id}`} key={i}>
+                  <Card>
+                    <CardHeader>
+                      <div className="flex justify-between items-end">
+                        <CardTitle>{list.name}</CardTitle>
+                        <Badge>
+                          {list.is_public ? "Public" : "Invite only"}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex justify-between gap-10">
+                      <CardDescription>{list.description}</CardDescription>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))
+            ) : (
+              <ListEmptyState />
+            )}
+          </section>
+        </div>
+      </AnimatedContainer>
     </main>
   );
 }

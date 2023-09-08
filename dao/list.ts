@@ -19,8 +19,6 @@ export class ListRepository implements Repository<ListType, string> {
     const [result] = await this.queryRunner.execute(
       `SELECT *, list.id as id, list.created_at, list_name as name, 
         list_description as description FROM list
-       LEFT JOIN list_product ON list.id = list_product.list_id
-       LEFT JOIN product ON list_product.product_id = product.id
        WHERE list.id = $1`,
       [id]
     );

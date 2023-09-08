@@ -1,21 +1,50 @@
+import { Input } from "@/components/ui/input";
+import { TypographyH2 } from "@/components/ui/typography";
 import { UserAuthForm } from "@/components/user-auth-form";
-import Link from "next/link";
+import { checkInviteCode, isValidUUID } from "@/lib/server.utils";
 
-export default function LoginPage() {
+const InvalidInviteCode = () => (
+  <TypographyH2>
+    Sorry, this invite code is invalid. Please try again.
+  </TypographyH2>
+);
+
+const InviteOnly = () => (
+  <>
+    <TypographyH2>
+      Simbi is invite only, if you&apos;d like to join the waitlist, sign up
+      below!
+    </TypographyH2>
+    <div className="my-4"></div>
+    <Input />
+  </>
+);
+
+const Login = () => <UserAuthForm state="login" />;
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const { invite_code } = searchParams;
+  const isValidInviteCode = await isValidUUID(invite_code as string);
+  const inviteCodeExists = isValidInviteCode
+    ? await checkInviteCode(invite_code as string)
+    : false;
+
+  let component;
+  if (isValidInviteCode && inviteCodeExists) {
+    component = <Login />;
+  } else if (isValidInviteCode && !inviteCodeExists) {
+    component = <InviteOnly />;
+  } else {
+    component = <InvalidInviteCode />;
+  }
+
   return (
     <div className="grid place-items-center h-full">
-      <div className="flex flex-col">
-        <UserAuthForm state="login" />
-        <p className="leading-7 [&:not(:first-child)]:mt-6 w-2/3 text-center">
-          <Link
-            href="/register"
-            className="hover:text-brand underline-offset-4"
-          >
-            Don&apos;t have an account?{" "}
-            <span className="underline">Sign Up</span>
-          </Link>
-        </p>
-      </div>
+      <div className="flex flex-col">{component}</div>
     </div>
   );
 }

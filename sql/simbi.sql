@@ -4,7 +4,7 @@ CREATE TABLE product (
   product_description text NOT NULL,
   product_image text,
   price money NOT NULL,
-  url text NOT NULL,
+  product_url text NOT NULL,
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp
 );
@@ -29,7 +29,7 @@ CREATE TABLE list_product (
   product_id int REFERENCES product(id) ON DELETE CASCADE,
   list_id int REFERENCES list(id) ON DELETE CASCADE,
   quantity integer NOT NULL,
-  claimedBy int REFERENCES users(id) ON DELETE SET NULL,
+  claimed_by int REFERENCES users(id) ON DELETE SET NULL,
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp
 );
@@ -70,10 +70,25 @@ VALUES ('🏫 Back to school', '#F9D9D9'),
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TABLE invites (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE invite_code (
+  id SERIAL PRIMARY KEY,
+  code uuid DEFAULT gen_random_uuid(),
   list_id int REFERENCES list(id),
   sender_user_id int REFERENCES users(id) ON DELETE CASCADE,
   created_at timestamp NOT NULL DEFAULT NOW(),
   expires_at timestamp NOT NULL DEFAULT NOW() + INTERVAL '7 days'
+);
+
+-- remove, will just use application code to do this
+CREATE OR REPLACE FUNCTION is_valid_uuid(uuid_text text) RETURNS boolean AS $$
+BEGIN
+  RETURN uuid_text ~ '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$';
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TABLE user_signup_codes (
+  id SERIAL PRIMARY KEY,
+  user_id int REFERENCES users(id) ON DELETE CASCADE,
+  invite_code_id int REFERENCES invite_code(id) ON DELETE CASCADE,
+  created_at timestamp NOT NULL DEFAULT NOW()
 );

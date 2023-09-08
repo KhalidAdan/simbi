@@ -7,7 +7,7 @@ export class QueryRunner<T> {
     this.pool = new Pool({ connectionString: process.env.DATABASE_URL });
   }
 
-  async execute(query: string, params?: any[]): Promise<T[]> {
+  async execute(query: string, params?: any[]) {
     this.client = await this.pool.connect();
 
     try {
@@ -18,7 +18,7 @@ export class QueryRunner<T> {
     }
   }
 
-  async executeInTransaction(query: string, params?: any[]): Promise<T[]> {
+  async executeInTransaction(query: string, params?: any[]) {
     this.client = await this.pool.connect();
     try {
       await this.client.query("BEGIN");

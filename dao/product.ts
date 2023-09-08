@@ -1,5 +1,6 @@
 import { ListProduct, ListProductType } from "@/models/list-product";
 import { Product, ProductType } from "@/models/product";
+import { User } from "@/models/user";
 import { QueryRunner } from "@/services/query-runner";
 import { Repository } from "./types";
 
@@ -28,14 +29,28 @@ export class ProductRepository implements Repository<ProductType, string> {
 
   async readProductsByListId(listId: string): Promise<ProductType[]> {
     const result = await this.queryRunner.execute(
-      `SELECT *, p.id, u.name as user_name FROM product p
+      `SELECT *, p.id, u.id as user_id, u.name as user_name, p.product_url as url, lp.claimed_by, SUM(p.price) OVER (PARTITION BY l.id) as sum
+        FROM product p
         INNER JOIN list_product lp ON p.id = lp.product_id
         LEFT JOIN list l ON lp.list_id = l.id
-        LEFT JOIN users u ON lp.claimed_by = u.id 
+        LEFT JOIN users u ON lp.claimed_by = u.id
         WHERE l.id = $1`,
       [listId]
     );
-    return result.map((row) => Product.parse(row));
+    return result.map((row) =>
+      Product.parse({
+        ...row,
+        user:
+          row.user_id && // only parse user if there is a user_id on the row
+          User.parse({
+            id: row.user_id,
+            name: row.user_name,
+            email: row.email,
+            emailVerified: row.email_verified,
+            image: row.image,
+          }),
+      })
+    );
   }
 
   async create(
@@ -103,6 +118,7 @@ export class ProductRepository implements Repository<ProductType, string> {
     productId: string,
     listId: string
   ): Promise<void> {
+    console.log(userId, productId, listId);
     await this.queryRunner.execute(
       `UPDATE list_product SET claimed_by = $1 WHERE product_id = $2 AND list_id = $3 RETURNING *`,
       [userId, productId, listId]

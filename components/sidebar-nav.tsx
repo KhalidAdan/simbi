@@ -17,13 +17,13 @@ type NavType = {
 
 const navLinks: NavType[] = [
   { id: 1, label: "My lists", href: "/lists", initial: "ML" },
-  {
-    id: 2,
-    label: "Discover",
-    href: "/discover",
-    initial: "DSCVR",
-  },
-  { id: 3, label: "Groups", href: "/groups", initial: "GRPS" },
+  // {
+  //   id: 2,
+  //   label: "Discover (soon)",
+  //   href: "/discover",
+  //   initial: "DSCVR",
+  // },
+  // { id: 3, label: "Groups (soon)", href: "/groups", initial: "GRPS" },
   {
     id: 3,
     label: "Feed",
@@ -70,7 +70,7 @@ export const SidebarNav = () => {
   return (
     <motion.aside
       className="border-r hidden md:block col-span-1"
-      layoutId=""
+      layoutId="sidebar"
       initial={{ opacity: 0.0001 }}
       animate={{ opacity: 1 }}
     >

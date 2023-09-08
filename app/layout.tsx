@@ -1,5 +1,6 @@
 import { SessionProvider } from "@/components/session-provider";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
@@ -28,6 +29,7 @@ export default async function RootLayout({
           <SessionProvider session={session}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               {children}
+              <Toaster />
             </ThemeProvider>
           </SessionProvider>
         </body>

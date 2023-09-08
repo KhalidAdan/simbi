@@ -125,8 +125,8 @@ export default function Example() {
             </div>
           </div>
         </div>
-        <div className="mt-16 border-t  pt-8 sm:mt-20 lg:mt-24">
-          <p className="text-xs leading-5 text-gray-400">
+        <div className="mt-16 pt-8 sm:mt-20 lg:mt-24">
+          <p className="text-xs leading-5 opacity-50">
             &copy; {new Date().getFullYear()} Codeworks. All rights reserved.
           </p>
         </div>
