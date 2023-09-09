@@ -5,10 +5,10 @@ import { Repository } from "./types";
 export class InviteCodeRepository
   implements Repository<InviteCodeType, string>
 {
-  constructor(private queryRunner: QueryRunner<InviteCodeType>) {}
+  constructor(private qR: QueryRunner<InviteCodeType>) {}
 
   async read() {
-    const result = await this.queryRunner.execute("SELECT * FROM invite_code");
+    const result = await this.qR.execute("SELECT * FROM invite_code");
     const inviteCodes: InviteCodeType[] = result.map((row: any) =>
       InviteCode.parse(row)
     );
@@ -16,7 +16,7 @@ export class InviteCodeRepository
   }
 
   async readById(id: string): Promise<InviteCodeType | undefined> {
-    const [result] = await this.queryRunner.execute(
+    const [result] = await this.qR.execute(
       "SELECT * FROM invite_code WHERE id = $1",
       [id]
     );
@@ -27,7 +27,7 @@ export class InviteCodeRepository
   }
 
   async readByCode(code: string): Promise<InviteCodeType | undefined> {
-    const [result] = await this.queryRunner.execute(
+    const [result] = await this.qR.execute(
       "SELECT * FROM invite_code WHERE code = $1",
       [code]
     );
@@ -40,7 +40,7 @@ export class InviteCodeRepository
   async create(
     entity: Pick<InviteCodeType, "list_id" | "sender_user_id">
   ): Promise<InviteCodeType> {
-    const [result] = await this.queryRunner.execute(
+    const [result] = await this.qR.execute(
       `INSERT INTO invite_code 
         (
          list_id, 
@@ -56,7 +56,7 @@ export class InviteCodeRepository
     entity: Pick<InviteCodeType, "list_id" | "sender_user_id">
   ): Promise<InviteCodeType> {
     // check if there is an existing invite code for this user on this list
-    const [result] = await this.queryRunner.execute(
+    const [result] = await this.qR.execute(
       `SELECT * FROM invite_code
         WHERE list_id = $1
         AND sender_user_id = $2
@@ -74,7 +74,7 @@ export class InviteCodeRepository
     user_id: string,
     invite_code_id: string
   ): Promise<InviteCodeType> {
-    const [result] = await this.queryRunner.execute(
+    const [result] = await this.qR.execute(
       `INSERT INTO user_signup_codes (user_id, invite_code_id) VALUES ($1, $2) RETURNING *`,
       [user_id, invite_code_id]
     );
@@ -82,7 +82,7 @@ export class InviteCodeRepository
   }
 
   async update(entity: InviteCodeType): Promise<InviteCodeType> {
-    const [inviteCode] = await this.queryRunner.execute(
+    const [inviteCode] = await this.qR.execute(
       `UPDATE invite_code 
         SET code = $2, 
             list_id = $3, 
@@ -95,7 +95,7 @@ export class InviteCodeRepository
   }
 
   async delete(id: string): Promise<InviteCodeType> {
-    const [inviteCode] = await this.queryRunner.execute(
+    const [inviteCode] = await this.qR.execute(
       `DELETE FROM invite_code 
         WHERE id = $1`,
       [id]

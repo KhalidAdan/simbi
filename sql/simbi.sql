@@ -21,7 +21,14 @@ CREATE TABLE list (
   type list_type NOT NULL DEFAULT 'one_time',
   recurring_window int REFERENCES recurring_times(id), -- in days, so 7 = weekly, 14 = bi-weekly, 30 = monthly, etc.
   public bool NOT NULL DEFAULT true
-  user_id int REFERENCES users(id) ON DELETE NOT NULL
+  user_id int REFERENCES users(id) ON DELETE NOT NULL -- owner of the list
+);
+
+CREATE TABLE list_user (
+  id SERIAL PRIMARY KEY,
+  list_id int REFERENCES list(id) ON DELETE CASCADE,
+  user_id int REFERENCES users(id) ON DELETE CASCADE,
+  created_at timestamp NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE list_product (

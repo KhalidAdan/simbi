@@ -2,12 +2,42 @@ import { Input } from "@/components/ui/input";
 import { TypographyH2 } from "@/components/ui/typography";
 import { UserAuthForm } from "@/components/user-auth-form";
 import { checkInviteCode, isValidUUID } from "@/lib/server.utils";
+import { NextSearchParams } from "@/lib/types";
 
-const InvalidInviteCode = () => (
-  <TypographyH2>
-    Sorry, this invite code is invalid. Please try again.
-  </TypographyH2>
-);
+async function validateInviteCode(
+  invite_code: string | string[] | undefined
+): Promise<boolean> {
+  if (!invite_code || typeof invite_code !== "string") return false;
+
+  const isValid = isValidUUID(invite_code);
+  if (!isValid) return false;
+
+  const inviteCodeExists = await checkInviteCode(invite_code);
+  if (!inviteCodeExists) return false;
+
+  return true;
+}
+
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: NextSearchParams;
+}) {
+  const { invite_code } = searchParams;
+  const isValidInviteCode = await validateInviteCode(invite_code);
+
+  return (
+    <div className="grid place-items-center h-full">
+      <div className="flex flex-col">
+        {isValidInviteCode ? (
+          <Register inviteCode={invite_code as string} />
+        ) : (
+          <InviteOnly />
+        )}
+      </div>
+    </div>
+  );
+}
 
 const InviteOnly = () => (
   <>
@@ -20,30 +50,6 @@ const InviteOnly = () => (
   </>
 );
 
-const Register = () => <UserAuthForm state="register" />;
-
-export default async function RegisterPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const { invite_code } = searchParams;
-  const isValidInviteCode = await isValidUUID(invite_code as string);
-  const inviteCodeExists = isValidInviteCode
-    ? await checkInviteCode(invite_code as string)
-    : false;
-
-  let component;
-  if (isValidInviteCode && inviteCodeExists) {
-    component = <Register />;
-  } else if (isValidInviteCode && !inviteCodeExists) {
-    component = <InviteOnly />;
-  } else {
-    component = <InvalidInviteCode />;
-  }
-  return (
-    <div className="grid place-items-center h-full">
-      <div className="">{component}</div>
-    </div>
-  );
-}
+const Register = ({ inviteCode }: { inviteCode: string }) => (
+  <UserAuthForm inviteCode={inviteCode} state="register" />
+);

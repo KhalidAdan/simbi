@@ -4,10 +4,10 @@ import { AdapterAccount } from "next-auth/adapters";
 import { Repository } from "./types";
 
 export class AccountRepository implements Repository<AccountType, number> {
-  constructor(private queryRunner: QueryRunner<AccountType>) {}
+  constructor(private qR: QueryRunner<AccountType>) {}
 
   async read() {
-    const result = await this.queryRunner.execute("SELECT * FROM account");
+    const result = await this.qR.execute("SELECT * FROM account");
     const accounts: AccountType[] = result.map((row: any) =>
       Account.parse(row)
     );
@@ -15,7 +15,7 @@ export class AccountRepository implements Repository<AccountType, number> {
   }
 
   async readById(id: number): Promise<AccountType | undefined> {
-    const [result] = await this.queryRunner.execute(
+    const [result] = await this.qR.execute(
       "SELECT * FROM account WHERE id = $1",
       [id]
     );
@@ -28,7 +28,7 @@ export class AccountRepository implements Repository<AccountType, number> {
   async readByProviderAccountId(
     providerAccountId: string
   ): Promise<AccountType | undefined> {
-    const [result] = await this.queryRunner.execute(
+    const [result] = await this.qR.execute(
       "SELECT * FROM account WHERE provider_account_id = $1",
       [providerAccountId]
     );
@@ -39,7 +39,7 @@ export class AccountRepository implements Repository<AccountType, number> {
   }
 
   async create(entity: AccountType): Promise<AccountType> {
-    const [account] = await this.queryRunner.execute(
+    const [account] = await this.qR.execute(
       `INSERT INTO account 
         (user_id, 
          provider, 
@@ -70,7 +70,7 @@ export class AccountRepository implements Repository<AccountType, number> {
   }
 
   async update(entity: AccountType): Promise<void> {
-    await this.queryRunner.execute(
+    await this.qR.execute(
       "UPDATE account SET refresh_token = $1, access_token = $2, expires_at = $3, token_type = $4, scope = $5, id_token = $6, session_state = $7, updated_date = $8 WHERE id = $9",
       [
         entity.refreshToken,
@@ -87,13 +87,11 @@ export class AccountRepository implements Repository<AccountType, number> {
   }
 
   async delete(entity: AccountType): Promise<void> {
-    await this.queryRunner.execute("DELETE FROM account WHERE id = $1", [
-      entity.id,
-    ]);
+    await this.qR.execute("DELETE FROM account WHERE id = $1", [entity.id]);
   }
 
   async linkAccount(account: AdapterAccount): Promise<void> {
-    await this.queryRunner.execute(
+    await this.qR.execute(
       "UPDATE account SET user_id = $1 WHERE provider_account_id = $2",
       [account.userId, account.providerAccountId]
     );

@@ -3,19 +3,18 @@ import { QueryRunner } from "@/services/query-runner";
 import { Repository } from "./types";
 
 export class TagRepository implements Repository<TagType, string> {
-  constructor(private queryRunner: QueryRunner<TagType>) {}
+  constructor(private qR: QueryRunner<TagType>) {}
 
   async read(): Promise<TagType[]> {
-    const result = await this.queryRunner.execute("SELECT * FROM tags");
+    const result = await this.qR.execute("SELECT * FROM tags");
     const tags = result.map((row: any) => Tag.parse(row));
     return tags;
   }
 
   async readById(id: string): Promise<TagType | undefined> {
-    const [result] = await this.queryRunner.execute(
-      "SELECT * FROM tags WHERE id = $1",
-      [id]
-    );
+    const [result] = await this.qR.execute("SELECT * FROM tags WHERE id = $1", [
+      id,
+    ]);
     if (!result) {
       return undefined;
     }
@@ -23,7 +22,7 @@ export class TagRepository implements Repository<TagType, string> {
   }
 
   async create(entity: TagType): Promise<TagType> {
-    const [tag] = await this.queryRunner.execute(
+    const [tag] = await this.qR.execute(
       "INSERT INTO tags (name, colour) VALUES ($1, $2) RETURNING id, name, colour",
       [entity.name, entity.colour]
     );
@@ -31,7 +30,7 @@ export class TagRepository implements Repository<TagType, string> {
   }
 
   async update(entity: TagType): Promise<void> {
-    await this.queryRunner.execute(
+    await this.qR.execute(
       "UPDATE tags SET name = $1, colour = $2 WHERE id = $3",
       [entity.name, entity.colour, entity.id]
     );

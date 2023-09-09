@@ -11,28 +11,32 @@ export class QueryRunner<T> {
   }
 
   async execute(query: string, params?: any[]) {
-    this.client = await this.connect();
     try {
+      this.client = await this.connect();
+
       const result = await this.client.query(query, params);
       return result.rows;
+    } catch (error) {
+      console.error(error);
+      await this.release();
+      throw error;
     } finally {
-      this.client.release();
     }
   }
 
   // A batch of only side effect queries
-  async executeInTransaction(queries: QueryWithParams[]): Promise<void>;
+  async transaction(queries: QueryWithParams[]): Promise<void>;
   // callback for more complex operations as an escape hatch
-  async executeInTransaction(
+  async transaction(
     callback: (client: QueryRunner<T>) => Promise<any>
-  ): Promise<any>;
-  async executeInTransaction(
+  ): Promise<T>;
+  async transaction(
     callbackOrQueries:
       | QueryWithParams[]
       | ((client: QueryRunner<T>) => Promise<any>)
   ) {
     this.client = await this.connect();
-
+    let result;
     try {
       await this.beginTransaction();
 
@@ -43,10 +47,11 @@ export class QueryRunner<T> {
         }
       } else {
         // Execute the callback
-        await callbackOrQueries(this);
+        result = await callbackOrQueries(this);
       }
 
       await this.commitTransaction();
+      return result;
     } catch (error) {
       await this.rollbackTransaction();
       throw error;
@@ -54,6 +59,7 @@ export class QueryRunner<T> {
       await this.release();
     }
   }
+
   async beginTransaction(): Promise<void> {
     console.log("beginning transaction");
     this.client = await this.connect();
@@ -84,8 +90,9 @@ export class QueryRunner<T> {
 
   async release(): Promise<void> {
     if (this.client) {
-      await this.client.release();
+      this.client.release();
       this.client = undefined;
     }
+    return Promise.resolve();
   }
 }

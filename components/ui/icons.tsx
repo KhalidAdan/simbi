@@ -16,6 +16,7 @@ import {
   IconNode as LucideIcon,
   LucideProps,
   Megaphone,
+  MenuSquare,
   Moon,
   MoreVertical,
   Pizza,
@@ -32,6 +33,7 @@ import {
 export type Icon = LucideIcon;
 
 export const Icons = {
+  hamburger: MenuSquare,
   loading: Loader2,
   megaPhone: Megaphone,
   calendar: Calendar,

@@ -1,13 +1,14 @@
 import { Title } from "@/components/content-title";
 import { AddListForm } from "@/components/lists/add-list-form";
 import { TypographyLead } from "@/components/ui/typography";
+import { NextSearchParams } from "@/lib/types";
 
 export default async function ListPage({
   params,
   searchParams,
 }: {
   params: { id: string };
-  searchParams: { template: string | string[] | undefined };
+  searchParams: NextSearchParams;
 }) {
   const template = searchParams.template;
   return (

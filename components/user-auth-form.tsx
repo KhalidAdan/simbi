@@ -10,7 +10,16 @@ import {
 } from "@/components/ui/card";
 import { signIn } from "next-auth/react";
 
-export function UserAuthForm({ state }: { state: "login" | "register" }) {
+export function UserAuthForm({
+  state,
+  inviteCode,
+}: {
+  state: "login" | "register";
+  inviteCode?: string;
+}) {
+  const callbackUrl = inviteCode
+    ? "/lists?invite_code=" + inviteCode
+    : "/lists";
   return (
     <Card className="w-[350px]">
       <CardHeader>
@@ -28,9 +37,9 @@ export function UserAuthForm({ state }: { state: "login" | "register" }) {
               <Button
                 variant="secondary"
                 onClick={(e) => {
-                  e.preventDefault(); // next auth errors if this is removed???
+                  e.preventDefault();
                   signIn("google", {
-                    callbackUrl: "/lists",
+                    callbackUrl,
                     redirect: true,
                   });
                 }}

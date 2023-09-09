@@ -26,8 +26,17 @@ export const authOptions: AuthOptions = {
   pages: {
     signIn: "/login",
   },
+  events: {
+    signIn: ({ user, isNewUser }) => {
+      // get the request URL here and check for an invite code!!
+      return;
+    },
+  },
 };
 
+// create a regular handler for the auth route
+// get the url from req.url
+// if it has an invite code use the signIn event to add the user to the list
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

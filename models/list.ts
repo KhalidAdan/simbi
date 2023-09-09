@@ -8,7 +8,7 @@ export const List = z.object({
   description: z.string(),
   type: z.string(),
   is_public: z.boolean().default(true),
-  user_id: z.coerce.string(),
+  user_id: z.coerce.string(), // owner of the list
   created_at: z.date(),
   updated_at: z.date().nullable().optional(),
   end_date: z.date(),

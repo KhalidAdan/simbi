@@ -12,9 +12,11 @@ export default async function ApplicationLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="grid grid-cols-4 h-full">
-      <SidebarNav />
-      <div className="col-span-4 md:col-span-3 my-10 mx-10 lg:mx-32">
+    <section className="grid grid-cols-5 h-full">
+      <div className="col-span-1 border-r hidden lg:block h-full">
+        <SidebarNav />
+      </div>
+      <div className="col-span-5 lg:col-span-4 my-10 mx-4 sm:mx-8 md:mx-12 lg:mx-20 xl:mx-32 2xl:mx-56">
         {children}
       </div>
     </section>

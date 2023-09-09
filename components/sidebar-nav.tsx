@@ -6,6 +6,14 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Badge } from "./ui/badge";
+import { Icons } from "./ui/icons";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 import { TypographyH3 } from "./ui/typography";
 
 type NavType = {
@@ -69,7 +77,6 @@ const NavLink: React.FC<NavType> = ({ href, label, initial }) => {
 export const SidebarNav = () => {
   return (
     <motion.aside
-      className="border-r hidden md:block col-span-1"
       layoutId="sidebar"
       initial={{ opacity: 0.0001 }}
       animate={{ opacity: 1 }}
@@ -85,5 +92,23 @@ export const SidebarNav = () => {
         </motion.ul>
       </nav>
     </motion.aside>
+  );
+};
+
+export const SidebarSheet = () => {
+  return (
+    <Sheet>
+      <SheetTrigger>
+        <Icons.hamburger className="h-8 w-8 z-10" />
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>
+            <TypographyH3>simbi</TypographyH3>
+          </SheetTitle>
+        </SheetHeader>
+        <SidebarNav />
+      </SheetContent>
+    </Sheet>
   );
 };
