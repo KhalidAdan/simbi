@@ -4,7 +4,10 @@ import { QueryRunner } from "@/services/query-runner";
 import { Repository } from "./types";
 
 export class ListRepository implements Repository<ListType, string> {
-  constructor(private qR: QueryRunner<ListType>) {}
+  private qR: QueryRunner<ListType>;
+  constructor() {
+    this.qR = new QueryRunner<ListType>();
+  }
 
   async read(): Promise<ListType[]> {
     const result = await this.qR.execute(
@@ -40,7 +43,7 @@ export class ListRepository implements Repository<ListType, string> {
   }
 
   async create(
-    entity: Omit<ListType, "id" | "created_at"> & { userId: string }
+    entity: Omit<ListType, "id" | "created_at"> & { user_id: string }
   ): Promise<ListType> {
     const [result] = await this.qR.execute(
       `INSERT INTO list 
@@ -63,7 +66,7 @@ export class ListRepository implements Repository<ListType, string> {
         entity.description,
         entity.type,
         entity.is_public ? entity.is_public : false,
-        entity.userId,
+        entity.user_id,
         entity.end_date,
       ]
     );

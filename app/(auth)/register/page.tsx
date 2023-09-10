@@ -29,11 +29,7 @@ export default async function RegisterPage({
   return (
     <div className="grid place-items-center h-full">
       <div className="flex flex-col">
-        {isValidInviteCode ? (
-          <Register inviteCode={invite_code as string} />
-        ) : (
-          <InviteOnly />
-        )}
+        {isValidInviteCode ? <Register /> : <InviteOnly />}
       </div>
     </div>
   );
@@ -50,6 +46,4 @@ const InviteOnly = () => (
   </>
 );
 
-const Register = ({ inviteCode }: { inviteCode: string }) => (
-  <UserAuthForm inviteCode={inviteCode} state="register" />
-);
+const Register = () => <UserAuthForm state="register" />;

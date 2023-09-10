@@ -4,7 +4,10 @@ import { AdapterAccount } from "next-auth/adapters";
 import { Repository } from "./types";
 
 export class UserRepository implements Repository<UserType, string> {
-  constructor(private qR: QueryRunner<UserType>) {}
+  private qR: QueryRunner<UserType>;
+  constructor() {
+    this.qR = new QueryRunner<UserType>();
+  }
 
   async read() {
     const result = await this.qR.execute("SELECT * FROM users");

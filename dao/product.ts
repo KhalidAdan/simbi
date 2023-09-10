@@ -5,7 +5,10 @@ import { QueryRunner } from "@/services/query-runner";
 import { Repository } from "./types";
 
 export class ProductRepository implements Repository<ProductType, string> {
-  constructor(private qR: QueryRunner<ProductType>) {}
+  private qR: QueryRunner<ProductType>;
+  constructor() {
+    this.qR = new QueryRunner<ProductType>();
+  }
 
   async read(): Promise<ProductType[]> {
     const result = await this.qR.execute(

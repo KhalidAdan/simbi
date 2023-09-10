@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     type,
     is_public: is_public,
     description: list_description,
-    userId: user.id,
+    user_id: user.id,
     end_date: new Date(
       new Date(end_date).toLocaleString("en-US", {
         timeZone: "America/New_York",

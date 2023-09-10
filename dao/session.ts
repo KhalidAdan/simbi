@@ -3,7 +3,10 @@ import { QueryRunner } from "@/services/query-runner";
 import { Repository } from "./types";
 
 export class SessionRepository implements Repository<SessionType, string> {
-  constructor(private qR: QueryRunner<SessionType>) {}
+  private qR: QueryRunner<SessionType>;
+  constructor() {
+    this.qR = new QueryRunner<SessionType>();
+  }
 
   async read(): Promise<SessionType[]> {
     const result = await this.qR.execute("SELECT * FROM session INNER");

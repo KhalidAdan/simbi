@@ -26,17 +26,43 @@ export const authOptions: AuthOptions = {
   pages: {
     signIn: "/login",
   },
-  events: {
-    signIn: ({ user, isNewUser }) => {
-      // get the request URL here and check for an invite code!!
-      return;
-    },
-  },
 };
 
-// create a regular handler for the auth route
-// get the url from req.url
-// if it has an invite code use the signIn event to add the user to the list
+function getAuthOptionsWithInvite(req: Request): AuthOptions {
+  let inviteCode: string | null = null;
+
+  console.log(req.url);
+
+  // Extract invite code from req.url (you might need more advanced parsing if it's complex)
+  const urlParts = req.url?.split("?");
+  if (urlParts && urlParts[1]) {
+    const params = new URLSearchParams(urlParts[1]);
+    inviteCode = params.get("inviteCode");
+  }
+
+  // Modify your authOptions or events based on the inviteCode if it exists
+  const updatedEvents = { ...authOptions.events };
+  if (inviteCode) {
+    updatedEvents.signIn = async ({ user, isNewUser }) => {
+      // Utilize the inviteCode here
+      console.log("inviteCode is here!", inviteCode);
+    };
+  }
+
+  return {
+    ...authOptions,
+    events: updatedEvents,
+  };
+}
+
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export async function GET(req: Request, res: Response) {
+  const authOptionsWithInvite = getAuthOptionsWithInvite(req);
+  return handler(req, res, authOptionsWithInvite);
+}
+
+export function POST(req: Request, res: Response) {
+  const authOptionsWithInvite = getAuthOptionsWithInvite(req);
+  return handler(req, res, authOptionsWithInvite);
+}

@@ -25,15 +25,12 @@ export default async function LoginPage({
 }) {
   const { invite_code } = searchParams;
   const isValidInviteCode = await validateInviteCode(invite_code);
+  //localhost:3000/login?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2Flists&invite_code=33a43716-26fa-4d33-8bf2-2deb421f5e01
 
   return (
     <div className="grid place-items-center h-full">
       <div className="flex flex-col">
-        {isValidInviteCode ? (
-          <Login inviteCode={invite_code as string} />
-        ) : (
-          <Login inviteCode={invite_code as string} />
-        )}
+        {isValidInviteCode ? <Login /> : <Login />}
       </div>
     </div>
   );
@@ -50,6 +47,4 @@ const InviteOnly = () => (
   </>
 );
 
-const Login = ({ inviteCode }: { inviteCode: string }) => (
-  <UserAuthForm inviteCode={inviteCode} state="login" />
-);
+const Login = () => <UserAuthForm state="login" />;

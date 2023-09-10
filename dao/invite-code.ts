@@ -5,7 +5,10 @@ import { Repository } from "./types";
 export class InviteCodeRepository
   implements Repository<InviteCodeType, string>
 {
-  constructor(private qR: QueryRunner<InviteCodeType>) {}
+  private qR: QueryRunner<InviteCodeType>;
+  constructor() {
+    this.qR = new QueryRunner<InviteCodeType>();
+  }
 
   async read() {
     const result = await this.qR.execute("SELECT * FROM invite_code");

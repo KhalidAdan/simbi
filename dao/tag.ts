@@ -3,7 +3,10 @@ import { QueryRunner } from "@/services/query-runner";
 import { Repository } from "./types";
 
 export class TagRepository implements Repository<TagType, string> {
-  constructor(private qR: QueryRunner<TagType>) {}
+  private qR: QueryRunner<TagType>;
+  constructor() {
+    this.qR = new QueryRunner<TagType>();
+  }
 
   async read(): Promise<TagType[]> {
     const result = await this.qR.execute("SELECT * FROM tags");

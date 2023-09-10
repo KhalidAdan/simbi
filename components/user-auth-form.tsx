@@ -10,16 +10,7 @@ import {
 } from "@/components/ui/card";
 import { signIn } from "next-auth/react";
 
-export function UserAuthForm({
-  state,
-  inviteCode,
-}: {
-  state: "login" | "register";
-  inviteCode?: string;
-}) {
-  const callbackUrl = inviteCode
-    ? "/lists?invite_code=" + inviteCode
-    : "/lists";
+export function UserAuthForm({ state }: { state: "login" | "register" }) {
   return (
     <Card className="w-[350px]">
       <CardHeader>
@@ -39,7 +30,7 @@ export function UserAuthForm({
                 onClick={(e) => {
                   e.preventDefault();
                   signIn("google", {
-                    callbackUrl,
+                    callbackUrl: "/lists",
                     redirect: true,
                   });
                 }}
