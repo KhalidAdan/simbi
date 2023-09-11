@@ -25,7 +25,9 @@ export default async function LoginPage({
 }) {
   const { invite_code } = searchParams;
   const isValidInviteCode = await validateInviteCode(invite_code);
-  //localhost:3000/login?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2Flists&invite_code=33a43716-26fa-4d33-8bf2-2deb421f5e01
+  // invites are not a first class citizen in next auth :(
+  // TODO: If picking this up again, consider an email strategy to invite users and check out the events for signIn in the `authOptions` object
+  // it exoses a bool called isNewUser
 
   return (
     <div className="grid place-items-center h-full">
