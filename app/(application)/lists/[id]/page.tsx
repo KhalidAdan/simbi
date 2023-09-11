@@ -10,17 +10,16 @@ import { ListRepository } from "@/dao/list";
 import { ProductRepository } from "@/dao/product";
 import { getUserFromToken } from "@/lib/server.utils";
 import { ProductType } from "@/models/product";
-import { QueryRunner } from "@/services/query-runner";
 import { TableWrapper } from "./columns";
 
 async function getProductsByList(listId: string) {
-  const productRepository = new ProductRepository(new QueryRunner());
+  const productRepository = new ProductRepository();
   const products = await productRepository.readProductsByListId(listId);
   return products;
 }
 
 async function getListById(listId: string) {
-  const listRepository = new ListRepository(new QueryRunner());
+  const listRepository = new ListRepository();
   const list = await listRepository.readById(listId);
   return list;
 }

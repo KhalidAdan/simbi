@@ -1,7 +1,6 @@
 import { ListRepository } from "@/dao/list";
 import { getUserFromToken } from "@/lib/server.utils";
 import { ListInput } from "@/models/list";
-import { QueryRunner } from "@/services/query-runner";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -23,7 +22,7 @@ export async function POST(request: Request) {
 
   const user = await getUserFromToken();
 
-  const listRepository = new ListRepository(new QueryRunner());
+  const listRepository = new ListRepository();
   const list = await listRepository.create({
     name: name,
     type,

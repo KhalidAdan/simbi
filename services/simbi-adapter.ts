@@ -9,13 +9,12 @@ import {
   AdapterSession,
   AdapterUser,
 } from "next-auth/adapters";
-import { QueryRunner } from "./query-runner";
 
 const SimbiAdapter = (): Adapter => {
   return {
     createUser: async (user: Omit<AdapterUser, "id">): Promise<AdapterUser> => {
       console.log("creating user");
-      const userRepository = new UserRepository(new QueryRunner());
+      const userRepository = new UserRepository();
       const newSavedUser = await userRepository.create({
         ...user,
         emailVerified: user.emailVerified ? new Date() : null,
@@ -28,7 +27,7 @@ const SimbiAdapter = (): Adapter => {
     },
     getUser: async (id: string): Promise<AdapterUser | null> => {
       console.log("getting user");
-      const userRepository = new UserRepository(new QueryRunner());
+      const userRepository = new UserRepository();
       const user = await userRepository.readById(id);
 
       if (!user) return null;
@@ -41,7 +40,7 @@ const SimbiAdapter = (): Adapter => {
     },
     getUserByEmail: async (email: string): Promise<AdapterUser | null> => {
       console.log("getting user by email");
-      const userRepository = new UserRepository(new QueryRunner());
+      const userRepository = new UserRepository();
       const user = await userRepository.readByEmail(email);
 
       if (!user) return null;
@@ -56,7 +55,7 @@ const SimbiAdapter = (): Adapter => {
       providerAccountId: Pick<AdapterAccount, "provider" | "providerAccountId">
     ): Promise<AdapterUser | null> => {
       console.log("getting user by account");
-      const userRepository = new UserRepository(new QueryRunner());
+      const userRepository = new UserRepository();
       const user = await userRepository.readByAccount(providerAccountId);
       if (!user) {
         return null;
@@ -71,7 +70,7 @@ const SimbiAdapter = (): Adapter => {
       user: Partial<AdapterUser> & Pick<AdapterUser, "id">
     ): Promise<AdapterUser> => {
       console.log("updating user");
-      const userRepository = new UserRepository(new QueryRunner());
+      const userRepository = new UserRepository();
       const { id, email, emailVerified } = await userRepository.update(
         user as any
       );
@@ -83,7 +82,7 @@ const SimbiAdapter = (): Adapter => {
     },
     linkAccount: async (account: AdapterAccount): Promise<void> => {
       console.log("linking account");
-      const accountRepository = new AccountRepository(new QueryRunner());
+      const accountRepository = new AccountRepository();
       const acct = await accountRepository.create({
         ...account,
         userId: Number(account.userId),
@@ -98,7 +97,7 @@ const SimbiAdapter = (): Adapter => {
       expires: Date;
     }): Promise<AdapterSession> => {
       console.log("creating session");
-      const sessionRepository = new SessionRepository(new QueryRunner());
+      const sessionRepository = new SessionRepository();
       const newSavedSession = await sessionRepository.create({
         sessionToken: session.sessionToken,
         user: {
@@ -124,7 +123,7 @@ const SimbiAdapter = (): Adapter => {
       sessionToken: string
     ): Promise<{ session: AdapterSession; user: AdapterUser } | null> => {
       console.log("getting session and user");
-      const sessionRepository = new SessionRepository(new QueryRunner());
+      const sessionRepository = new SessionRepository();
       const session = await sessionRepository.readByToken(sessionToken);
       if (
         !session ||
@@ -151,7 +150,7 @@ const SimbiAdapter = (): Adapter => {
       session: Partial<AdapterSession> & Pick<AdapterSession, "sessionToken">
     ): Promise<AdapterSession> => {
       console.log("updating session");
-      const sessionRepository = new SessionRepository(new QueryRunner());
+      const sessionRepository = new SessionRepository();
       const updatedSession = Session.parse(session);
       await sessionRepository.update(updatedSession);
       if (
@@ -169,7 +168,7 @@ const SimbiAdapter = (): Adapter => {
       };
     },
     deleteSession: async (sessionToken: string): Promise<void> => {
-      const sessionRepository = new SessionRepository(new QueryRunner());
+      const sessionRepository = new SessionRepository();
       await sessionRepository.deleteByToken(sessionToken);
     },
   };

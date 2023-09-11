@@ -15,17 +15,16 @@ import { TagRepository } from "@/dao/tag";
 import { getUserFromToken } from "@/lib/server.utils";
 import { ListType } from "@/models/list";
 import { TagType } from "@/models/tag";
-import { QueryRunner } from "@/services/query-runner";
 import Link from "next/link";
 
 async function getLists() {
   const user = await getUserFromToken();
-  const listRepository = new ListRepository(new QueryRunner());
+  const listRepository = new ListRepository();
   return await listRepository.readByUserId(user.id);
 }
 
 async function getTags() {
-  const tagRepository = new TagRepository(new QueryRunner());
+  const tagRepository = new TagRepository();
   return await tagRepository.read();
 }
 

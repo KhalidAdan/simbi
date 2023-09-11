@@ -1,7 +1,6 @@
 import { InviteCodeRepository } from "@/dao/invite-code";
 import { UserRepository } from "@/dao/user";
 import { UserType } from "@/models/user";
-import { QueryRunner } from "@/services/query-runner";
 import { decode } from "next-auth/jwt";
 import { cookies } from "next/headers";
 
@@ -26,7 +25,7 @@ export const getUserFromToken = async (): Promise<
   )
     throw new Error("Unauthorized");
 
-  const userRepository = new UserRepository(new QueryRunner());
+  const userRepository = new UserRepository();
   const loggedInUser = await userRepository.readByEmail(sessionToken.email);
 
   if (loggedInUser === undefined) throw new Error("Unauthorized");
@@ -44,7 +43,7 @@ export function isValidUUID(uuid: string): boolean {
 }
 
 export async function checkInviteCode(code: string) {
-  const inviteCodeRepository = new InviteCodeRepository(new QueryRunner());
+  const inviteCodeRepository = new InviteCodeRepository();
   const inviteCodeExists = !!(await inviteCodeRepository.readByCode(code));
 
   return inviteCodeExists;

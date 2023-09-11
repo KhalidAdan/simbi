@@ -1,7 +1,6 @@
 import { InviteCodeRepository } from "@/dao/invite-code";
 import { getUserFromToken } from "@/lib/server.utils";
 import { InviteCodeInput } from "@/models/invite-code";
-import { QueryRunner } from "@/services/query-runner";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const inviteRepository = new InviteCodeRepository(new QueryRunner());
+    const inviteRepository = new InviteCodeRepository();
     const invite = await inviteRepository.createOrReturnExisting({
       list_id,
       sender_user_id: Number(user.id),
@@ -36,5 +35,5 @@ export async function PUT(request: Request) {
   const { inviteCodeId } = await request.json();
   const user = await getUserFromToken();
 
-  const inviteRepository = new InviteCodeRepository(new QueryRunner());
+  const inviteRepository = new InviteCodeRepository();
 }
