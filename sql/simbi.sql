@@ -11,6 +11,13 @@ CREATE TABLE product (
 
 CREATE TYPE list_type as ENUM ('one_time', 'recurring');
 
+CREATE TABLE recurring_times(
+  id SERIAL PRIMARY KEY,
+  name text NOT NULL
+);
+
+INSERT INTO recurring_times (name) VALUES ('every 7 days'), ('every 14 days'), ('every 30 days');
+
 CREATE TABLE list (
   id SERIAL PRIMARY KEY,
   list_name text NOT NULL,
@@ -19,9 +26,9 @@ CREATE TABLE list (
   created_at timestamp NOT NULL DEFAULT NOW(),
   updated_at timestamp,
   type list_type NOT NULL DEFAULT 'one_time',
-  recurring_window int REFERENCES recurring_times(id), -- in days, so 7 = weekly, 14 = bi-weekly, 30 = monthly, etc.
+  recurring_window int REFERENCES recurring_times(id), 
   public bool NOT NULL DEFAULT true,
-  user_id int REFERENCES users(id) ON DELETE NOT NULL -- owner of the list
+  user_id int REFERENCES users(id) ON DELETE NOT NULL 
 );
 
 CREATE TABLE list_user (
